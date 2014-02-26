@@ -1,0 +1,41 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{comment}
+\usepackage{natbib}
+\usepackage{listings}
+\lstset{
+    language=C,
+    emph={nn_send, nn_receive, nn_configure, nn_invoke},
+    emphstyle=\bfseries,
+    basicstyle=\ttfamily\footnotesize,
+    aboveskip=1mm plus 1mm minus 1mm,
+    belowskip=1mm plus 1mm minus 1mm,
+    mathescape=true,
+    xleftmargin=\parindent,
+}
+
+\newcommand{\code}{\lstinline[basicstyle=\ttfamily\small]}
+
+\newcommand{\todo}[2]{
+\ifx\PrintTodo\undefined
+\textcolor{red}{#2\xspace}
+\else
+\textcolor{red}{TODO[#1]:} \textcolor{blue}{\textit{#2}\xspace}
+\fi
+}
+
+\begin{document}
+
+\title{Visualizing Physical Query Execution in a Relational Big Data Management System}
+\author{Umar Javed, Thierry Moreau, Dominik Moritz, Adriana Szekeres}
+
+\maketitle
+
+\input{related_work}
+\input{project_plan}
+
+
+\bibliographystyle{plain}
+\bibliography{report}
+
+\end{document}

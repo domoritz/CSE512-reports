@@ -1,0 +1,7 @@
+\section{Related work}
+
+Twitter developed Ambrose\cite{ambrose}, a platform for visualization and real-time monitoring of MapReduce data workflows. They offer three different views to show associated jobs, job dependencies and progress. Ambrose has been released as open source. Ambrose, however, is not suitable for our needs as the abstraction level of jobs is too high and does not capture single operators.
+
+Google's Dapper\cite{sigelman2010dapper} is a distributed systems tracing infrastructure and offers fine grained tracing of calls in Google's distributed systems. They also proposed an interface for visualizing traces. Twitter closely modeled Zipkin\cite{zipkin} after Dapper and released it as open source. Our system is similar to Dapper and Zipkin as it has a similar architecture and offers similar visualizations. However, we offer different abstraction levels, which enables users to find problems faster and handle larger amounts of profiling data. Also, our visualization is specifically designed to help developers understand query execution in distributed database system like Myria as opposed to general traces in distributed systems.
+
+Tools to visualize query plans for example in SQL Server, as used to improve performance for the SDSS Sky survey\cite{szalay2002sdss}, focus on optimizing queries and not query execution and have no visualization of data flow, which is necessary to optimize physical query execution.
