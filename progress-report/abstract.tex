@@ -1,0 +1,9 @@
+\begin{abstract}
+
+We propose a visualization system for understanding and exploring query execution and data movement in a distributed database system. Our tool will provide insight into: (1) data flow between query fragments and between workers, (2) query execution and operator dependencies, (3) cluster utilization, (4) network utilization. Our tool will help developers understand and improve query execution, and will provide insight into common problems such as data skew or performance bottlenecks.
+
+In particular, our visualization system is built to inspect query execution in Myria, a distributed big data management system currently being developed in the UW CSE database group. Myria aims towards building a distributed database platform to provide \emph{big data management and analytics as a service} primarily for scientific applications. 
+
+Our vision is to build a generic visualization that can be used for other systems as well (e.g. Spark, Hadoop). This project builds on an existing prototype that uses logs generated during query execution to create a time series visualization of operator states.
+
+\end{abstract}
