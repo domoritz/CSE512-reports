@@ -4,8 +4,13 @@
 \usepackage{graphics}
 \usepackage{color}
 \usepackage[pdftex]{hyperref}
+\usepackage{xspace}
+
+\newcommand*{\system}{OGEN\xspace}
+\newcommand*{\papertitle}{\system: Visualizing Physical Query Execution in a Relational Big Data Management System}
+
 \hypersetup{%
-pdftitle={Visualizing Physical Query Execution in a Relational Big Data Management System},
+pdftitle={\papertitle},
 pdfauthor={Umar Javed, Thierry Moreau, Dominik Moritz, Adriana Szekeres},
 pdfkeywords={},
 bookmarksnumbered,
@@ -20,7 +25,6 @@ breaklinks=true,
 \newcommand{\comment}[1]{}
 \definecolor{Orange}{rgb}{1,0.5,0}
 \newcommand{\todo}[1]{\textsf{\textbf{\textcolor{Orange}{[[#1]]}}}}
-\newcommand{\system}{OGEN }
 
 \pagenumbering{arabic}  % Arabic page numbers for submission.  Remove this line to eliminate page numbers for the camera ready copy
 
@@ -37,7 +41,7 @@ breaklinks=true,
 %\toappear{Submitted for review to CHI 2009.}
 \toappear{}
 
-\title{Visualizing Physical Query Execution in a Relational Big Data Management System}
+\title{\papertitle}
 \numberofauthors{1}
 \author{\alignauthor Umar Javed, Thierry Moreau, Dominik Moritz, Adriana Szekeres \\
 \affaddr{Dept. of Computer Science, University of Washington} \\ \affaddr{ Seattle, Washington, USA} \\
@@ -48,11 +52,11 @@ breaklinks=true,
 
 \begin{abstract}
 
-We propose a visualization system for understanding and exploring query execution and data movement in a distributed database system. Our tool will provide insight into: (1) data flow between query fragments and between workers, (2) query execution and operator dependencies, (3) cluster utilization, (4) network utilization. Our tool will help developers understand and improve query execution, and will provide insight into common problems such as data skew or performance bottlenecks.
+We propose a visualization system for understanding and exploring query execution and data movement in a distributed database management system (DDBMS). Our tool will provide insight into: (1) data flow between query fragments and between workers, (2) query execution and operator dependencies, (3) cluster utilization, (4) network utilization. Our tool, which we call \system, will help developers understand and improve query execution, and will provide insight into common problems such as data skew or performance bottlenecks.
 
-In particular, our visualization system is built to inspect query execution in Myria\footnote{\url{http://myria.cs.washington.edu/}}, a distributed big data management system currently being developed in the UW CSE database group. Myria aims towards building a distributed database platform to provide \emph{big data management and analytics as a service} primarily for scientific applications.
+In particular, \system is built to inspect query execution in Myria\footnote{\url{http://myria.cs.washington.edu/}}, a distributed big data management system currently being developed in the UW CSE database group. Myria aims towards building a distributed database platform to provide \emph{big data management and analytics as a service} primarily for scientific applications.
 
-Our vision is to build a generic visualization that can be used for other systems as well (e.g. Spark, Hadoop). This project builds on an existing prototype that uses logs generated during query execution to create a time series visualization of operator states.
+The proposed visualizations can easily be applied to other DDBMS as well (e.g. Spark, Hadoop).
 
 \end{abstract}
 
@@ -61,6 +65,8 @@ Our vision is to build a generic visualization that can be used for other system
 %\category{H.5.2}{Information Interfaces and Presentation}{Miscellaneous}[Optional sub-category]
 
 \section{Introduction}
+
+% Umar
 
 % What is myria, how does it work (look at report from last quarter but shorter), which languages are supported
 % motivation
@@ -73,14 +79,13 @@ Our vision is to build a generic visualization that can be used for other system
 \end{itemize}
 
 
-
-% Umar
-
 \section{Related Work}
 
 Twitter developed Ambrose\cite{ambrose}, a platform for visualization and real-time monitoring of MapReduce data workflows. They offer three different views to show associated jobs, job dependencies and progress. Ambrose has been released as open source. Ambrose, however, is not suitable for our needs as the abstraction level of jobs is too high and does not capture single operators.
 
-Google's Dapper\cite{sigelman2010dapper} is a distributed systems tracing infrastructure and offers fine grained tracing of calls in Google's distributed systems. They also proposed an interface for visualizing traces. Twitter closely modeled Zipkin\cite{zipkin} after Dapper and released it as open source. Our system is similar to Dapper and Zipkin as it has a similar architecture and offers similar visualizations. However, we offer different abstraction levels, which enables users to find problems faster and handle larger amounts of profiling data. Also, our visualization is specifically designed to help developers understand query execution in distributed database system like Myria as opposed to general traces in distributed systems.
+Google's Dapper\cite{sigelman2010dapper} is a distributed systems tracing infrastructure and offers fine grained tracing of calls in Google's distributed systems. They also proposed an interface for visualizing traces. Similarly, X-trace\cite{fonseca2007x} was developed as a framework to trace which events cause what other events in a distributed environment. recently, there has been work on visualizing event traces collected in X-trace\footnote{\url{https://github.com/brownsys/X-Trace/tree/master/src/webui/html/interactive}}. Due to the importance of these kinds of debug facilities, Twitter closely modeled Zipkin\cite{zipkin} after Dapper and X-trace and released it as open source.
+
+Dapper and X-trace focus on how data flows through a distributed system. In \system the visualization focuses on the operators and how the data flows through them. This orthogonal view is better suited for debugging performance bottlenecks in DDBMS and also scales to a larger number of events. Furthermore, in contrast to  we offer different abstraction levels, which enables users to find problems faster and handle larger amounts of profiling data. Also, \system is specifically designed to help developers understand query execution in distributed database system like Myria as opposed to general traces in distributed systems.
 
 Tools to visualize query plans for example in SQL Server, as used to improve performance for the SDSS Sky survey\cite{szalay2002sdss}, focus on optimizing queries and not query execution and have no visualization of data flow, which is necessary to optimize physical query execution.
 
@@ -111,7 +116,7 @@ help
 
 \subsection{Front-end}
 
-
+% Thierry
 
 \subsubsection{Overview over all fragments}
 
@@ -149,6 +154,6 @@ help
 % Dom
 
 \bibliographystyle{abbrv}
-\bibliography{sample}
+\bibliography{paper}
 
 \end{document}
