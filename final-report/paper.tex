@@ -8,6 +8,10 @@
 
 \newcommand*{\system}{OGEN\xspace}
 \newcommand*{\papertitle}{\system: Visualizing Physical Query Execution in a Relational Big Data Management System}
+\newcommand*{\graphview}{Physical Query Plan View\xspace}
+\newcommand*{\fragmentview}{Fragment Execution View\xspace}
+\newcommand*{\networkview}{Worker Communication View\xspace}
+\newcommand*{\overallview}{Fragment Overall View\xspace}
 
 \hypersetup{%
 pdftitle={\papertitle},
@@ -93,9 +97,20 @@ Tools to visualize query plans for example in SQL Server, as used to improve per
 
 % Adriana
 
-% What the user sees
+The first step in designing \system was to identify the possible causes that
+could affect the execution performance of the query. After we identified
+several such causes, that we will enumerate below, we leveraged visualization
+techniques that we found fit to allow developers/programmers to get insight
+into how the query was executed on the available resources and quickly
+identify the source(s) of the performance penalty.
+
+We found that the performance of the query might be affected by the following
+factors, which influenced :
+\begin{itemize}
+   \item 
+\end{itemize} 
+
 % Why did we choose the visualization
-% How it is implemented
 
 \begin{itemize}
     \item determine possible causes (data skew, stragglers, etc.) for why a query might be slow and design visualizations to
