@@ -4,8 +4,13 @@
 \usepackage{graphics}
 \usepackage{color}
 \usepackage[pdftex]{hyperref}
+\usepackage{xspace}
+
+\newcommand*{\system}{OGEN\xspace}
+\newcommand*{\papertitle}{\system: Visualizing Physical Query Execution in a Relational Big Data Management System}
+
 \hypersetup{%
-pdftitle={Visualizing Physical Query Execution in a Relational Big Data Management System},
+pdftitle={\papertitle},
 pdfauthor={Umar Javed, Thierry Moreau, Dominik Moritz, Adriana Szekeres},
 pdfkeywords={},
 bookmarksnumbered,
@@ -20,7 +25,6 @@ breaklinks=true,
 \newcommand{\comment}[1]{}
 \definecolor{Orange}{rgb}{1,0.5,0}
 \newcommand{\todo}[1]{\textsf{\textbf{\textcolor{Orange}{[[#1]]}}}}
-\newcommand{\system}{OGEN }
 
 \pagenumbering{arabic}  % Arabic page numbers for submission.  Remove this line to eliminate page numbers for the camera ready copy
 
@@ -37,7 +41,7 @@ breaklinks=true,
 %\toappear{Submitted for review to CHI 2009.}
 \toappear{}
 
-\title{Visualizing Physical Query Execution in a Relational Big Data Management System}
+\title{\papertitle}
 \numberofauthors{1}
 \author{\alignauthor Umar Javed, Thierry Moreau, Dominik Moritz, Adriana Szekeres \\
 \affaddr{Dept. of Computer Science, University of Washington} \\ \affaddr{ Seattle, Washington, USA} \\
@@ -80,7 +84,7 @@ Twitter developed Ambrose\cite{ambrose}, a platform for visualization and real-t
 
 Google's Dapper\cite{sigelman2010dapper} is a distributed systems tracing infrastructure and offers fine grained tracing of calls in Google's distributed systems. They also proposed an interface for visualizing traces. Similarly, X-trace\cite{fonseca2007x} was developed as a framework to trace which events cause what other events in a distributed environment. recently, there has been work on visualizing event traces collected in X-trace\footnote{\url{https://github.com/brownsys/X-Trace/tree/master/src/webui/html/interactive}}. Due to the importance of these kinds of debug facilities, Twitter closely modeled Zipkin\cite{zipkin} after Dapper and X-trace and released it as open source.
 
-Dapper and X-trace focus on how data flows through a distributed system. In \system the user looks at the operators and how the data flows through them. This orthogonal view is better suited for debugging performance bottlenecks in distributed DBMS and also scales to a larger number of events. Furthermore, in contrast to  we offer different abstraction levels, which enables users to find problems faster and handle larger amounts of profiling data. Also, \system is specifically designed to help developers understand query execution in distributed database system like Myria as opposed to general traces in distributed systems.
+Dapper and X-trace focus on how data flows through a distributed system. In \system the visualization focuses on the operators and how the data flows through them. This orthogonal view is better suited for debugging performance bottlenecks in distributed DBMS and also scales to a larger number of events. Furthermore, in contrast to  we offer different abstraction levels, which enables users to find problems faster and handle larger amounts of profiling data. Also, \system is specifically designed to help developers understand query execution in distributed database system like Myria as opposed to general traces in distributed systems.
 
 Tools to visualize query plans for example in SQL Server, as used to improve performance for the SDSS Sky survey\cite{szalay2002sdss}, focus on optimizing queries and not query execution and have no visualization of data flow, which is necessary to optimize physical query execution.
 
