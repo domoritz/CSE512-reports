@@ -46,6 +46,7 @@ breaklinks=true,
 \maketitle
 
 \begin{abstract}
+
 We propose a visualization system for understanding and exploring query execution and data movement in a distributed database system. Our tool will provide insight into: (1) data flow between query fragments and between workers, (2) query execution and operator dependencies, (3) cluster utilization, (4) network utilization. Our tool will help developers understand and improve query execution, and will provide insight into common problems such as data skew or performance bottlenecks.
 
 In particular, our visualization system is built to inspect query execution in Myria\footnote{\url{http://myria.cs.washington.edu/}}, a distributed big data management system currently being developed in the UW CSE database group. Myria aims towards building a distributed database platform to provide \emph{big data management and analytics as a service} primarily for scientific applications.
@@ -60,6 +61,11 @@ Our vision is to build a generic visualization that can be used for other system
 
 \section{Introduction}
 
+% What is myria, how does it work (look at report from last quarter but shorter)
+% motivation
+% questions
+% why is a visualization a good way to answer the questions
+
 \begin{itemize}
     \item problem: hard to learn why a query is slow
     \item motivation: help developers/programmers dig what the problems might be
@@ -69,8 +75,11 @@ Our vision is to build a generic visualization that can be used for other system
 
 \section{Related Work}
 
-% Dom
+Twitter developed Ambrose\cite{ambrose}, a platform for visualization and real-time monitoring of MapReduce data workflows. They offer three different views to show associated jobs, job dependencies and progress. Ambrose has been released as open source. Ambrose, however, is not suitable for our needs as the abstraction level of jobs is too high and does not capture single operators.
 
+Google's Dapper\cite{sigelman2010dapper} is a distributed systems tracing infrastructure and offers fine grained tracing of calls in Google's distributed systems. They also proposed an interface for visualizing traces. Twitter closely modeled Zipkin\cite{zipkin} after Dapper and released it as open source. Our system is similar to Dapper and Zipkin as it has a similar architecture and offers similar visualizations. However, we offer different abstraction levels, which enables users to find problems faster and handle larger amounts of profiling data. Also, our visualization is specifically designed to help developers understand query execution in distributed database system like Myria as opposed to general traces in distributed systems.
+
+Tools to visualize query plans for example in SQL Server, as used to improve performance for the SDSS Sky survey\cite{szalay2002sdss}, focus on optimizing queries and not query execution and have no visualization of data flow, which is necessary to optimize physical query execution.
 
 \section{Approach}
 
@@ -93,6 +102,12 @@ help
 \subsection{Front-end}
 
 % Thierry
+
+\subsubsection{Overview over all fragments}
+
+% Adriana
+
+% Write about small multiples view
 
 \subsubsection{Physical query plan view}
 
