@@ -62,7 +62,7 @@ Our vision is to build a generic visualization that can be used for other system
 
 \section{Introduction}
 
-% What is myria, how does it work (look at report from last quarter but shorter)
+% What is myria, how does it work (look at report from last quarter but shorter), which languages are supported
 % motivation
 % questions
 % why is a visualization a good way to answer the questions
@@ -71,6 +71,8 @@ Our vision is to build a generic visualization that can be used for other system
     \item problem: hard to learn why a query is slow
     \item motivation: help developers/programmers dig what the problems might be
 \end{itemize}
+
+
 
 % Umar
 
@@ -96,6 +98,13 @@ help
     \item we designed three views - physical query plan, fragment view, communication view.
 \end{itemize}
 
+
+\system's frontend is embedded into Myria's web frontend and provides comprehensive performance views to the user. There are 4 views in total that allow the user to visualize query performance details under different angles:
+\begin{itemize}
+    \item Physical Query Plan view: this view allows the user to connect the query she wrote with the physical query plan that the query optimizer generates.
+    \item etc. 
+\end{itemize}
+
 \subsection{Back-end}
 
 % Dom
@@ -113,8 +122,6 @@ help
 \subsubsection{Physical query plan view}
 
 % Thierry
-
-\system is awesome.
 
 \subsubsection{Fragment execution view}
 
