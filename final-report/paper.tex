@@ -78,7 +78,9 @@ Our vision is to build a generic visualization that can be used for other system
 
 Twitter developed Ambrose\cite{ambrose}, a platform for visualization and real-time monitoring of MapReduce data workflows. They offer three different views to show associated jobs, job dependencies and progress. Ambrose has been released as open source. Ambrose, however, is not suitable for our needs as the abstraction level of jobs is too high and does not capture single operators.
 
-Google's Dapper\cite{sigelman2010dapper} is a distributed systems tracing infrastructure and offers fine grained tracing of calls in Google's distributed systems. They also proposed an interface for visualizing traces. Twitter closely modeled Zipkin\cite{zipkin} after Dapper and released it as open source. Our system is similar to Dapper and Zipkin as it has a similar architecture and offers similar visualizations. However, we offer different abstraction levels, which enables users to find problems faster and handle larger amounts of profiling data. Also, our visualization is specifically designed to help developers understand query execution in distributed database system like Myria as opposed to general traces in distributed systems.
+Google's Dapper\cite{sigelman2010dapper} is a distributed systems tracing infrastructure and offers fine grained tracing of calls in Google's distributed systems. They also proposed an interface for visualizing traces. Similarly, X-trace\cite{fonseca2007x} was developed as a framework to trace which events cause what other events in a distributed environment. recently, there has been work on visualizing event traces collected in X-trace\footnote{\url{https://github.com/brownsys/X-Trace/tree/master/src/webui/html/interactive}}. Due to the importance of these kinds of debug facilities, Twitter closely modeled Zipkin\cite{zipkin} after Dapper and X-trace and released it as open source.
+
+Dapper and X-trace focus on how data flows through a distributed system. In \system the user looks at the operators and how the data flows through them. This orthogonal view is better suited for debugging performance bottlenecks in distributed DBMS and also scales to a larger number of events. Furthermore, in contrast to  we offer different abstraction levels, which enables users to find problems faster and handle larger amounts of profiling data. Also, \system is specifically designed to help developers understand query execution in distributed database system like Myria as opposed to general traces in distributed systems.
 
 Tools to visualize query plans for example in SQL Server, as used to improve performance for the SDSS Sky survey\cite{szalay2002sdss}, focus on optimizing queries and not query execution and have no visualization of data flow, which is necessary to optimize physical query execution.
 
@@ -142,6 +144,6 @@ help
 % Dom
 
 \bibliographystyle{abbrv}
-\bibliography{sample}
+\bibliography{paper}
 
 \end{document}
