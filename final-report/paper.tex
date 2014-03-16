@@ -115,8 +115,12 @@ help
 % Dom
 
 \subsection{Front-end}
-
+The Myria web front-end server is written in Python and runs on Google App Engine. \system's user-interface (UI) is embedded into Myria's web front-end. We build \system's UI using D3 to delive an interactive visualization experience to the user. D3 is a JavaScript framework for data visualziation on the web. We used visualization techniques such as empth{focus+context} that are possible to implement conveniently using D3.
+The \system's front-end gets data from the Myria server in JSON and CSV file formats. JSON objects are used to describe the physical queryplan, while CSV files contain information describing the execution of the query at the fragment and operator level, the total amount of data exchange between workers at different stages of the query execution.
+The \system's web UI is divided into two main sections.
 % Thierry
+
+
 
 \subsubsection{Overview over all fragments}
 
