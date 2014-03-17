@@ -80,6 +80,7 @@ The proposed visualizations can easily be applied to other DDBMS as well (e.g. S
 % motivation
 % questions (inspiration: https://docs.google.com/a/uw.edu/document/d/1Syn65bu_p6S4RQETaozsleYcRBauQJ7IduYrctS1wrw/edit?pli=1#)
 % why is a visualization a good way to answer the questions
+% so far the only performance debug mechanism is runtime 
 
 \begin{itemize}
     \item problem: hard to learn why a query is slow
@@ -202,7 +203,7 @@ The \fragment view comprises two charts: the aggregation chart and the workers c
     \caption{No data skew.}
     \label{fig:no-skew}
   \end{subfigure}
-  \caption{The network view shows a distinctive pattern when there is data skew. Figure~\ref{fig:skew} shows that most tuples are sent to worker 1 and 5 (origin: x-axis, destination: y-axis).}
+  \caption{The network view shows a distinctive pattern when there is data skew. Figure~\ref{fig:skew} shows that most tuples are sent to worker 1 and 5 (origin: row, destination: column).}
   \label{fig:network}
 \end{figure}
 
@@ -214,18 +215,22 @@ The \fragment view comprises two charts: the aggregation chart and the workers c
 
 \section{Evaluation}
 
+In this section we will evaluate the different visualizations and elaborate on actual examples where the visualization helped us to find data or execution skew.
+
 % How it helps
 % Examples
 
 % Thierry + Dom
 
+\subsection{Network visualization}
 
-
-\textbf{Discussion:}
+The network visualization at a glance shows how much data was sent between workers. Figure~\ref{fig:network} compares the communication between workers. In Figure~\ref{fig:skew} one can see that most of the data is sent to worker~1 and then worker~5.
 
 \section{Conclusion}
 
 % Adriana
+
+% Capabilities and Limitations
 
 \section{Future Work}
 
