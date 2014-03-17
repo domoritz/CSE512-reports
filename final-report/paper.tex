@@ -5,8 +5,9 @@
 \usepackage{color}
 \usepackage[pdftex]{hyperref}
 \usepackage{xspace}
-
 \usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
 
 
 \newcommand*{\system}{OGEN\xspace}
@@ -59,7 +60,7 @@ breaklinks=true,
 
 \begin{abstract}
 
-We propose a visualization system for understanding and exploring query execution and data movement in a distributed database management system (DDBMS). Our tool will provide insight into: (1) data flow between query fragments and between workers, (2) query execution and operator dependencies, (3) cluster utilization, (4) network utilization. Our tool, which we call \system, will help developers understand and improve query execution, and will provide insight into common problems such as data skew or performance bottlenecks.
+We propose a visualization system for understanding and exploring query execution and data movement in a distributed database management system (DDBMS). Our tool provides insight into: (1) data flow between query fragments and between workers, (2) query execution and operator dependencies, (3) cluster utilization, (4) network utilization. Our tool, which we call \system, helps developers understand and improve query execution, and provides insight into common problems such as data skew or performance bottlenecks.
 
 In particular, \system is built to inspect query execution in Myria\footnote{\url{http://myria.cs.washington.edu/}}, a distributed big data management system currently being developed in the UW CSE database group. Myria aims towards building a distributed database platform to provide \emph{big data management and analytics as a service} primarily for scientific applications.
 
@@ -77,8 +78,9 @@ The proposed visualizations can easily be applied to other DDBMS as well (e.g. S
 
 % What is myria, how does it work (look at report from last quarter but shorter), which query languages are supported
 % motivation
-% questions & goals
+% questions (inspiration: https://docs.google.com/a/uw.edu/document/d/1Syn65bu_p6S4RQETaozsleYcRBauQJ7IduYrctS1wrw/edit?pli=1#)
 % why is a visualization a good way to answer the questions
+% so far the only performance debug mechanism is runtime
 % contributions
 
 \begin{itemize}
@@ -110,51 +112,60 @@ into how the query was executed on the available resources and quickly
 identify the source(s) of the performance penalty.
 
 We found that the performance of the query might be affected by the following
-factors, which influenced :
+factors, which greatly influenced the design of our visualization tool:
 \begin{itemize}
-   \item 
-\end{itemize} 
+   \item \emph{Wrong/unoptimized physical query plan.} We manually analyzed
+several physical query plans and discovered that some queries were poorly
+optimized. This led us to design a view that allows interactive exploration of
+the physical query plan (mapped to a graph of query operators).
+   \item \emph{Stragglers, tail latency, expensive query operators, poor
+scheduling.} Our targeted systems are \emph{distributed} databases. Therefore,
+as the query is executed in a distributed environment, the query coordinator
+has to wait until all the workers finish executing their assigned tasks. To
+give insight into how the tasks are distributed and executed at each workers,
+we designed a view that shows the cluster utilization over time and at each
+worker.
+   \item \emph{Poor data partitioning, data skew.} Network traffic can cause
+serious delay when executing a distributed query. Due to poor data
+partitioning, workers might need to send unnecessary big amount of data between
+each other. We designed a view that allows the developer/programmer to analyze
+the data traffic generated while executing the query.
+\end{itemize}
 
 % Why did we choose the visualization
 % How it is implemented
 % explain how events and logs are used to create the raw data for vis
 
-\begin{itemize}
-    \item determine possible causes (data skew, stragglers, etc.) for why a query might be slow and design visualizations to
-help
-    \item we designed three views - physical query plan, fragment view, communication view.
-\end{itemize}
-
-
-\system's frontend is embedded into Myria's web frontend and provides comprehensive performance views to the user. There are 4 views in total that allow the user to visualize query performance details under different angles:
-\begin{itemize}
-    \item Physical Query Plan view: this view allows the user to connect the query she wrote with the physical query plan that the query optimizer generates.
-    \item etc. 
-\end{itemize}
-
-The front and back end of \system are highly decoupled so that it can be used not only with Myria but also with other systems such as Spark or Hadoop. In Section~\ref{sec:back} we illustrate how we implemented log collections and aggregation in Myria.
+\system's architecture (Figure~\ref{fig:arch}) consists of a back-end,
+used as a plug-in interface for the distributed database system targeted, and a
+front-end which implements the views described above. The front-end and
+back-end of \system are highly decoupled so that the visualization can be used not only with
+Myria but also with other systems such as Spark or Hadoop. In
+Section~\ref{sec:back} we illustrate how we implemented log collections and
+aggregation in Myria.
 
 \subsection{Back-end}
 \label{sec:back}
 
 The task of the back-end is to log when operators are called, when the call returns and when data is sent to another worker. Using this data and simple transformations, we can obtain the information necessary to create the visualizations to answer the questions in Section~\ref{sec:approach}.
 
-There are two possible approaches that we explored to collect event logs that can be used to extract spans and other performance related data necessary for the visualization. First, events could be logged to files using a standard logging tool and then collect the files on one node using remote copy. Once the logs are in one place, they can be parsed and the data transformed into the desired format.
+There are two possible approaches that we explored to collect event logs that can be used to extract spans and other performance related data necessary for the visualization. First, events could be logged to files using a standard logging tool and then collect the files on one node using remote copy. Once the logs are on one machine, the logs can be parsed and the data can be transformed into the desired format.
 
 We switched to a different approach as shown in Figure~\ref{fig:arch} where logs are written directly into the worker's database. When the front-end requests the data, the master executes a query that collects the data and streams the results directly to the requesting client. Logs are thus tuples in a relation and no longer separate in files and in a custom format. Despite being more reliable, faster and using the same logic that Myria already implements, we are able to write queries to aggregate, filter and transform the collected data.
 
 For example, the data for how many workers are working on a certain fragment as described in Section~\ref{sec:fragments} is generated from the event log using a query to select only events for the root operators (the operators that have no parent in the same fragment) in each fragment and a custom map function that carries state. The state is an integer that is incremented when the operator is called on a worker and decremented when the operator returns.
 
 \begin{figure}[ht]
-  \includegraphics[width=\columnwidth]{viz_arch}
-  \caption{Architecture}
+  \includegraphics[width=\columnwidth]{images/viz_arch}
+  \caption{Overview of the log collection and transformation architecture. Raw event logs are collected on each worker. The data is stored in relations. To download the data, a query has to be executed.}
   \label{fig:arch}
 \end{figure}
 
 We highly suggest that developers use the second approach when porting \system to a new DDBMS.
 
 \subsection{Front-end}
-The Myria web front-end server is written in Python and runs on Google App Engine. \system's user-interface (UI) is embedded into Myria's web front-end. We build \system's UI using D3 to delive an interactive visualization experience to the user. D3 is a JavaScript framework for data visualziation on the web. We used visualization techniques such as \emph{focus+context} that possible to implement conveniently using D3.
+
+The Myria web front-end server is written in Python and runs on Google App Engine. \system's user-interface (UI) is embedded into Myria's web front-end. We build \system's UI using D3\cite{2011-d3} to deliver an interactive visualization experience to the user. D3 is a JavaScript framework for data visualization on the web. We used visualization techniques such as \emph{focus+context}\cite{furnas1986generalized} that possible to implement conveniently using D3.
 
 \system's front-end gets data from the Myria server as JSON and CSV files. JSON objects are used to describe the physical queryplan. CSV files contain logs on query execution at the fragment and operator level as well as data exchange between workers at different stages of the query execution.
 
@@ -198,6 +209,31 @@ The user can perform two classes of actions that will render a new visualization
 
 % Adriana
 
+The \fragment view comprises two charts: the utilization chart and the
+operators chart. The utilization chart (Fig.~\ref{fig:utilization_chart}) shows the utilization
+of the cluster over time, inside the selected fragment. The chart is used to
+quickly reveal any patterns in the schedule, like tail latency, long periods of
+idleness, etc. We implemented a small brush (at the top of the figure) that
+allows the user to zoom-in and further analyze the problematic area.
+
+\begin{figure}[ht]
+  \includegraphics[width=\columnwidth]{images/utilization_chart}
+  \caption{The utilization chart. }
+  \label{fig:utilization_chart}
+\end{figure}
+
+The utilization chart also implements a brush that allows the user to further
+analyze the query execution by displaying the schedule of each of the worker
+nodes, in the operators chart (Fig.~\ref{fig:operators_chart}). The per-worker
+schedule shows what operators the worker executed and for how long.
+
+
+\begin{figure}[ht]
+  \includegraphics[width=\columnwidth]{images/operators_chart}
+  \caption{The operators chart.}
+  \label{fig:operators_chart}
+\end{figure}
+
 % use the word spans when referring to events with duration (used in dapper)
 
 \subsubsection{Worker communication view}
@@ -206,20 +242,46 @@ The user can perform two classes of actions that will render a new visualization
 
 \section{Evaluation}
 
+
+\begin{figure}[ht]
+  \centering
+  \begin{subfigure}[b]{0.49\columnwidth}
+    \includegraphics[width=\columnwidth]{images/skew}
+    \caption{Data skew.}
+    \label{fig:skew}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.49\columnwidth}
+    \includegraphics[width=\columnwidth]{images/no-skew}
+    \caption{No data skew.}
+    \label{fig:no-skew}
+  \end{subfigure}
+  \caption{The network view shows a distinctive pattern when there is data skew. Figure~\ref{fig:skew} shows that most tuples are sent to worker 1 and 5 (origin: row, destination: column).}
+  \label{fig:network}
+\end{figure}
+
+
+In this section we will evaluate the different visualizations and elaborate on actual examples where the visualization helped us to find data or execution skew.
+
 % How it helps
 % Examples
 
 % Thierry + Dom
 
-\textbf{Discussion:}
+\subsection{Network visualization}
+
+The network visualization at a glance shows how much data was sent between workers. Figure~\ref{fig:network} compares the communication between workers. In Figure~\ref{fig:skew} one can see that most of the data is sent to worker~1 and then worker~5.
 
 \section{Conclusion}
 
 % Adriana
 
+% Capabilities and Limitations
+
 \section{Future Work}
 
-% Dom
+A focus of the current implementation is on scalability to many workers and long running queries. More aggregations have to be done by the database itself. Most importantly, in the fragment visualization that shows spans for all events we should limit the data that is being downloaded and rendered to what the user can see. With the architecture as explained in Section~\ref{sec:back}, we are able to express these filter conditions as queries.
+
+Besides performance improvements, we plan to integrate X-trace and its visualization to offer the orthogonal view and allow users to trace how tuple batches flow through the operators and between operators. Combined with the visualizations described in this paper, it will form a powerful debugging tool that will help us to better understand and improve query execution.
 
 \bibliographystyle{abbrv}
 \bibliography{paper}
