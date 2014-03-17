@@ -189,7 +189,39 @@ The following subsections describe each one of the four views offered by \system
 
 % Adriana
 
-The \fragment view comprises two charts: the aggregation chart and the workers chart.
+The \fragment view comprises two charts: the utilization chart and the
+operators chart. The utilization chart (Fig.~\ref{fig:utilization_chart}) shows the utilization
+of the cluster over time, inside the selected fragment. The chart is used to
+quickly reveal any patterns in the schedule, like tail latency, long periods of
+idleness, etc. We implemented a small brush (at the top of the figure) that
+allows the user to zoom-in and further analyze the problematic area.
+
+\begin{figure}[ht]
+  \includegraphics[width=\columnwidth]{images/utilization_chart}
+  \caption{The utilization chart. }
+  \label{fig:utilization_chart}
+\end{figure}
+  
+The utilization chart also implements a brush that allows the user to further
+analyze the query execution by displaying the schedule of each of the worker
+nodes, in the operators chart (Fig.~\ref{fig:operators_chart}). The per-worker
+schedule shows what operators the worker executed and for how long.
+
+
+\begin{figure}[ht]
+  \includegraphics[width=\columnwidth]{images/operators_chart}
+  \caption{The operators chart.}
+  \label{fig:operators_chart}
+\end{figure}
+
+% use the word spans when referring to events with duration (used in dapper)
+
+\subsubsection{Worker communication view}
+
+% Umar
+
+\section{Evaluation}
+
 
 \begin{figure}[ht]
   \centering
@@ -207,13 +239,6 @@ The \fragment view comprises two charts: the aggregation chart and the workers c
   \label{fig:network}
 \end{figure}
 
-% use the word spans when referring to events with duration (used in dapper)
-
-\subsubsection{Worker communication view}
-
-% Umar
-
-\section{Evaluation}
 
 In this section we will evaluate the different visualizations and elaborate on actual examples where the visualization helped us to find data or execution skew.
 
