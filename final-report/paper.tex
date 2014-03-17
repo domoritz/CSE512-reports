@@ -75,10 +75,11 @@ The proposed visualizations can easily be applied to other DDBMS as well (e.g. S
 
 % Umar
 
-% What is myria, how does it work (look at report from last quarter but shorter), which languages are supported
+% What is myria, how does it work (look at report from last quarter but shorter), which query languages are supported
 % motivation
-% questions
+% questions & goals
 % why is a visualization a good way to answer the questions
+% contributions
 
 \begin{itemize}
     \item problem: hard to learn why a query is slow
@@ -157,12 +158,11 @@ The Myria web front-end server is written in Python and runs on Google App Engin
 
 \system's front-end gets data from the Myria server as JSON and CSV files. JSON objects are used to describe the physical queryplan. CSV files contain logs on query execution at the fragment and operator level as well as data exchange between workers at different stages of the query execution.
 
-\system's web UI is divided into two components: (1) the context window which provides a visualization of the \graph, and (2) the performance window which provides some insight into an element selected in the context view. The context window contains a view of the \graph, rendered as a graph. The user can navigate the \graph by expanding query fragments into the operators that compose it. The user can chose to select a fragment of interest which will render a \fragment visualization for the selected fragment in the performance window. Alternatively, the user can select an fragment-to-fragment edge in the \graph thus rendering a \network visualization for the selected edge in the performance window. If no elements are selected in the \graph view, an \overall visualization is rendered in the performance window, displaying the aggregate worker utilization over time for each fragment.
+\system's web UI is divided into two components: (1) the browser panel which provides a visualization of the \graph, and (2) the performance panel which provides some insight into an element selected in the browser view. The browser panel contains a view of the \graph, rendered as a graph. The user can navigate the \graph by expanding query fragments into the operators that compose it. The user can chose to select a fragment of interest which will render a \fragment visualization of the selected fragment in the performance panel. Alternatively, the user can select an fragment-to-fragment edge in the \graph thus rendering a \network visualization of the selected edge in the performance panel. If no elements are selected in the \graph view, an \overall visualization is rendered in the performance panel, displaying the aggregate worker utilization over time for each fragment.
 
 The following subsections describe each one of the four views offered by \system's web UI.
 
 % Thierry
-
 
 
 \subsubsection{Overview over all fragments}
@@ -175,6 +175,24 @@ The following subsections describe each one of the four views offered by \system
 \subsubsection{Physical query plan view}
 
 % Thierry
+
+The \graph view provides context to the user. It provides a visualization of the physical query plan. A query plan is an ordered set of steps used to access data in database management systems. The physical query plan is represented by a graph where each node represents a query fragment, and each link represents inter-worker communication from one query fragment to the next. Each query fragment is a collection of query operators. One can think of a query fragment as a job unit that gets scheduled on a cluster of machines. Consequently transitioning from one query fragment to another generally incurs all-to-all communication between worker nodes on the cluster. 
+
+The user can perform two classes of actions that will render a new visualization in the performance panel:
+\begin{itemize}
+
+    \item \textbf{Empty selection:} by default if no fragments or edges are selected in the \graph view, an \overall visualization is rendered in the performance panel. This visualization displays the aggregate worker utilization over time for each fragment and provides cluster utilization data at a glance.
+    \item \textbf{Fragment selection:} when selecting a fragment, a \fragment visualization gets displayed in the performance panel. The \fragment visualization provides aggregate cluster utilization information complemented by per-worker task schedules. When a fragment is selected, the operands inside of the fragment in the \graph view are color-coded to allow the user to easily match each task in the per-worker schedule in the performance window with the corresponding query operator.
+    \item \textbf{Edge selection:} upon selecting one or more fragment-to-fragment edges, a \network visualization gets displayed, providing aggregate exchange data between cluster nodes.
+    
+\end{itemize}
+
+\textbf{Graph Rendering:} We use D3 to render the \graph graph, which allows us to support various interactions and transistions. We use GraphViz \cite{graphviz} in the backend to generate graph layout information. GraphViz allows us to generate graph layouts optimized for space. The layout information is then fed into a D3-based rendering engine. 
+
+\textbf{Graph Navigation:} A query plan can be arbitrarily large. Thus we offer two mechanisms that facilitate exploration of the graph for the user: (1) expanding/reducing fragments and (2) zooming. The first mechanism can reduce the size of the graph by a constant factor by collapsing operators that compose a fragment into a single node. The user can click once on a collapsed fragment to expand it, and click once on an expanded fragment to collapse it. Expanding or reducing a node can cause large changes in the graph layout because GraphViz optimizes the graph layout to minimize area. We implemented transitions to allow the user to track the fragments as they get shuffled around after one fragment gets expanded or reduced. The second mechanism that facilitates exploration of the graph for the user is zooming. This feature was implemented in D3 and allows the user to quickly jump from one part of the graph to another, by zooming in and out of the view.
+
+\textbf{Tooltip Information:} TODO
+
 
 \subsubsection{Fragment execution view}
 
