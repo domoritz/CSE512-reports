@@ -77,7 +77,7 @@ The proposed visualizations can easily be applied to other DDBMS as well (e.g. S
 
 % What is myria, how does it work (look at report from last quarter but shorter), which languages are supported
 % motivation
-% questions
+% questions (inspiration: https://docs.google.com/a/uw.edu/document/d/1Syn65bu_p6S4RQETaozsleYcRBauQJ7IduYrctS1wrw/edit?pli=1#)
 % why is a visualization a good way to answer the questions
 
 \begin{itemize}
@@ -136,7 +136,7 @@ the data traffic generated while executing the query.
 \system's architecture (Fig.~\ref{fig:arch}) consists of a back-end,
 used as a plug-in interface for the distributed database system targeted, and a
 front-end which implements the views described above. The front-end and
-back-end of \system are highly decoupled so that it can be used not only with
+back-end of \system are highly decoupled so that the visualization can be used not only with
 Myria but also with other systems such as Spark or Hadoop. In
 Section~\ref{sec:back} we illustrate how we implemented log collections and
 aggregation in Myria.
@@ -162,7 +162,7 @@ We highly suggest that developers use the second approach when porting \system t
 
 \subsection{Front-end}
 
-The Myria web front-end server is written in Python and runs on Google App Engine. \system's user-interface (UI) is embedded into Myria's web front-end. We build \system's UI using D3 to delive an interactive visualization experience to the user. D3 is a JavaScript framework for data visualziation on the web. We used visualization techniques such as \emph{focus+context} that possible to implement conveniently using D3.
+The Myria web front-end server is written in Python and runs on Google App Engine. \system's user-interface (UI) is embedded into Myria's web front-end. We build \system's UI using D3\cite{2011-d3} to deliver an interactive visualization experience to the user. D3 is a JavaScript framework for data visualziation on the web. We used visualization techniques such as \emph{focus+context} that possible to implement conveniently using D3.
 
 \system's front-end gets data from the Myria server as JSON and CSV files. JSON objects are used to describe the physical queryplan. CSV files contain logs on query execution at the fragment and operator level as well as data exchange between workers at different stages of the query execution.
 
