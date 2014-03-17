@@ -130,9 +130,14 @@ help
 % Dom
 
 \subsection{Front-end}
-The Myria web front-end server is written in Python and runs on Google App Engine. \system's user-interface (UI) is embedded into Myria's web front-end. We build \system's UI using D3 to delive an interactive visualization experience to the user. D3 is a JavaScript framework for data visualziation on the web. We used visualization techniques such as empth{focus+context} that are possible to implement conveniently using D3.
-The \system's front-end gets data from the Myria server in JSON and CSV file formats. JSON objects are used to describe the physical queryplan, while CSV files contain information describing the execution of the query at the fragment and operator level, the total amount of data exchange between workers at different stages of the query execution.
-The \system's web UI is divided into two main sections.
+The Myria web front-end server is written in Python and runs on Google App Engine. \system's user-interface (UI) is embedded into Myria's web front-end. We build \system's UI using D3 to delive an interactive visualization experience to the user. D3 is a JavaScript framework for data visualziation on the web. We used visualization techniques such as \emph{focus+context} that possible to implement conveniently using D3.
+
+\system's front-end gets data from the Myria server as JSON and CSV files. JSON objects are used to describe the physical queryplan. CSV files contain logs on query execution at the fragment and operator level as well as data exchange between workers at different stages of the query execution.
+
+\system's web UI is divided into two components: (1) the context window which provides a visualization of the \graph, and (2) the performance window which provides some insight into an element selected in the context view. The context window contains a view of the \graph, rendered as a graph. The user can navigate the \graph by expanding query fragments into the operators that compose it. The user can chose to select a fragment of interest which will render a \fragment visualization for the selected fragment in the performance window. Alternatively, the user can select an fragment-to-fragment edge in the \graph thus rendering a \network visualization for the selected edge in the performance window. If no elements are selected in the \graph view, an \overall visualization is rendered in the performance window, displaying the aggregate worker utilization over time for each fragment.
+
+The following subsections describe each one of the four views offered by \system's web UI.
+
 % Thierry
 
 
