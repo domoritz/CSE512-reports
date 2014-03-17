@@ -97,6 +97,7 @@ Dapper and X-trace focus on how data flows through a distributed system. In \sys
 Tools to visualize query plans for example in SQL Server, as used to improve performance for the SDSS Sky survey\cite{szalay2002sdss}, focus on optimizing queries and not query execution and have no visualization of data flow, which is necessary to optimize physical query execution.
 
 \section{Approach}
+\label{sec:approach}
 
 % Adriana
 
@@ -143,11 +144,13 @@ aggregation in Myria.
 \subsection{Back-end}
 \label{sec:back}
 
+The task of the back-end is to log when operators are called, when the call returns and when data is sent to another worker. Using this data and simple transformations, we can obtain the information necessary to create the visualizations to answer the questions in Section~\ref{sec:approach}.
+
 There are two possible approaches that we explored to collect event logs that can be used to extract spans and other performance related data necessary for the visualization. First, events could be logged to files using a standard logging tool and then collect the files on one node using remote copy. Once the logs are in one place, they can be parsed and the data transformed into the desired format.
 
 We switched to a different approach as shown in Figure~\ref{fig:arch} where logs are written directly into the worker's database. When the front-end requests the data, the master executes a query that collects the data and streams the results directly to the requesting client. Logs are thus tuples in a relation and no longer separate in files and in a custom format. Despite being more reliable, faster and using the same logic that Myria already implements, we are able to write queries to aggregate, filter and transform the collected data.
 
-For example, the data for how many workers are working on a certain fragment as described in Section~\ref{sec:fragments} is generated from the even log using a query to select only events for the root operators (the operators that have no parent in the same fragment) in each fragment and a custom map function that carries state. The state is an integer that is incremented when the operator is called on a worker and decremented when the operator returns.
+For example, the data for how many workers are working on a certain fragment as described in Section~\ref{sec:fragments} is generated from the event log using a query to select only events for the root operators (the operators that have no parent in the same fragment) in each fragment and a custom map function that carries state. The state is an integer that is incremented when the operator is called on a worker and decremented when the operator returns.
 
 \begin{figure}[ht]
   \includegraphics[width=\columnwidth]{viz_arch}
@@ -158,9 +161,14 @@ For example, the data for how many workers are working on a certain fragment as 
 We highly suggest that developers use the second approach when porting \system to a new DDBMS.
 
 \subsection{Front-end}
-The Myria web front-end server is written in Python and runs on Google App Engine. \system's user-interface (UI) is embedded into Myria's web front-end. We build \system's UI using D3 to delive an interactive visualization experience to the user. D3 is a JavaScript framework for data visualziation on the web. We used visualization techniques such as empth{focus+context} that are possible to implement conveniently using D3.
-The \system's front-end gets data from the Myria server in JSON and CSV file formats. JSON objects are used to describe the physical queryplan, while CSV files contain information describing the execution of the query at the fragment and operator level, the total amount of data exchange between workers at different stages of the query execution.
-The \system's web UI is divided into two main sections.
+The Myria web front-end server is written in Python and runs on Google App Engine. \system's user-interface (UI) is embedded into Myria's web front-end. We build \system's UI using D3 to delive an interactive visualization experience to the user. D3 is a JavaScript framework for data visualziation on the web. We used visualization techniques such as \emph{focus+context} that possible to implement conveniently using D3.
+
+\system's front-end gets data from the Myria server as JSON and CSV files. JSON objects are used to describe the physical queryplan. CSV files contain logs on query execution at the fragment and operator level as well as data exchange between workers at different stages of the query execution.
+
+\system's web UI is divided into two components: (1) the context window which provides a visualization of the \graph, and (2) the performance window which provides some insight into an element selected in the context view. The context window contains a view of the \graph, rendered as a graph. The user can navigate the \graph by expanding query fragments into the operators that compose it. The user can chose to select a fragment of interest which will render a \fragment visualization for the selected fragment in the performance window. Alternatively, the user can select an fragment-to-fragment edge in the \graph thus rendering a \network visualization for the selected edge in the performance window. If no elements are selected in the \graph view, an \overall visualization is rendered in the performance window, displaying the aggregate worker utilization over time for each fragment.
+
+The following subsections describe each one of the four views offered by \system's web UI.
+
 % Thierry
 
 
