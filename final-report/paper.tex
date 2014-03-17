@@ -6,6 +6,9 @@
 \usepackage[pdftex]{hyperref}
 \usepackage{xspace}
 
+\usepackage{graphicx}
+
+
 \newcommand*{\system}{OGEN\xspace}
 \newcommand*{\papertitle}{\system: Visualizing Physical Query Execution in a Relational Big Data Management System}
 \newcommand*{\graph}{Physical Query Plan\xspace}
@@ -111,6 +114,8 @@ factors, which influenced :
 \end{itemize} 
 
 % Why did we choose the visualization
+% How it is implemented
+% explain how events and logs are used to create the raw data for vis
 
 \begin{itemize}
     \item determine possible causes (data skew, stragglers, etc.) for why a query might be slow and design visualizations to
@@ -125,9 +130,24 @@ help
     \item etc. 
 \end{itemize}
 
-\subsection{Back-end}
+The front and back end of \system are highly decoupled so that it can be used not only with Myria but also with other systems such as Spark or Hadoop. In Section~\ref{sec:back} we illustrate how we implemented log collections and aggregation in Myria.
 
-% Dom
+\subsection{Back-end}
+\label{sec:back}
+
+There are two possible approaches that we explored to collect event logs that can be used to extract spans and other performance related data necessary for the visualization. First, events could be logged to files using a standard logging tool and then collect the files on one node using remote copy. Once the logs are in one place, they can be parsed and the data transformed into the desired format.
+
+We switched to a different approach as shown in Figure~\ref{fig:arch} where logs are written directly into the worker's database. When the front-end requests the data, the master executes a query that collects the data and streams the results directly to the requesting client. Logs are thus tuples in a relation and no longer separate in files and in a custom format. Despite being more reliable, faster and using the same logic that Myria already implements, we are able to write queries to aggregate, filter and transform the collected data.
+
+For example, the data for how many workers are working on a certain fragment as described in Section~\ref{sec:fragments} is generated from the even log using a query to select only events for the root operators (the operators that have no parent in the same fragment) in each fragment and a custom map function that carries state. The state is an integer that is incremented when the operator is called on a worker and decremented when the operator returns.
+
+\begin{figure}[ht]
+  \includegraphics[width=\columnwidth]{viz_arch}
+  \caption{Architecture}
+  \label{fig:arch}
+\end{figure}
+
+We highly suggest that developers use the second approach when porting \system to a new DDBMS.
 
 \subsection{Front-end}
 The Myria web front-end server is written in Python and runs on Google App Engine. \system's user-interface (UI) is embedded into Myria's web front-end. We build \system's UI using D3 to delive an interactive visualization experience to the user. D3 is a JavaScript framework for data visualziation on the web. We used visualization techniques such as empth{focus+context} that are possible to implement conveniently using D3.
@@ -138,6 +158,7 @@ The \system's web UI is divided into two main sections.
 
 
 \subsubsection{Overview over all fragments}
+\label{sec:fragments}
 
 % Adriana
 
@@ -150,6 +171,8 @@ The \system's web UI is divided into two main sections.
 \subsubsection{Fragment execution view}
 
 % Adriana
+
+% use the word spans when referring to events with duration (used in dapper)
 
 \subsubsection{Worker communication view}
 
