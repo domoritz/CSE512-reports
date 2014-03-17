@@ -105,10 +105,14 @@ into how the query was executed on the available resources and quickly
 identify the source(s) of the performance penalty.
 
 We found that the performance of the query might be affected by the following
-factors, which influenced the design of our visualization:
+factors, which greatly influenced the design of our visualization tool:
 \begin{itemize}
-   \item Wrong/unoptimized physical query plan. 
-   \item Stragglers,   
+   \item \emph{Wrong/unoptimized physical query plan.} We manually analyzed
+several physical query plans and discovered that some queries were poorly
+optimized. This led us to design a view that allows interactive exploration of
+the physical query plan (mapped to a graph of query operators). 
+   \item Stragglers, tail latency, expensive query operators, poor scheduling.
+   \item Poor data partitioning, data skew.
 \end{itemize} 
 
 % Why did we choose the visualization
