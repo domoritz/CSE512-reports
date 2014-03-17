@@ -5,8 +5,9 @@
 \usepackage{color}
 \usepackage[pdftex]{hyperref}
 \usepackage{xspace}
-
 \usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
 
 
 \newcommand*{\system}{OGEN\xspace}
@@ -79,6 +80,7 @@ The proposed visualizations can easily be applied to other DDBMS as well (e.g. S
 % motivation
 % questions (inspiration: https://docs.google.com/a/uw.edu/document/d/1Syn65bu_p6S4RQETaozsleYcRBauQJ7IduYrctS1wrw/edit?pli=1#)
 % why is a visualization a good way to answer the questions
+% so far the only performance debug mechanism is runtime 
 
 \begin{itemize}
     \item problem: hard to learn why a query is slow
@@ -220,16 +222,40 @@ schedule shows what operators the worker executed and for how long.
 
 \section{Evaluation}
 
+
+\begin{figure}[ht]
+  \centering
+  \begin{subfigure}[b]{0.49\columnwidth}
+    \includegraphics[width=\columnwidth]{images/skew}
+    \caption{Data skew.}
+    \label{fig:skew}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.49\columnwidth}
+    \includegraphics[width=\columnwidth]{images/no-skew}
+    \caption{No data skew.}
+    \label{fig:no-skew}
+  \end{subfigure}
+  \caption{The network view shows a distinctive pattern when there is data skew. Figure~\ref{fig:skew} shows that most tuples are sent to worker 1 and 5 (origin: row, destination: column).}
+  \label{fig:network}
+\end{figure}
+
+
+In this section we will evaluate the different visualizations and elaborate on actual examples where the visualization helped us to find data or execution skew.
+
 % How it helps
 % Examples
 
 % Thierry + Dom
 
-\textbf{Discussion:}
+\subsection{Network visualization}
+
+The network visualization at a glance shows how much data was sent between workers. Figure~\ref{fig:network} compares the communication between workers. In Figure~\ref{fig:skew} one can see that most of the data is sent to worker~1 and then worker~5.
 
 \section{Conclusion}
 
 % Adriana
+
+% Capabilities and Limitations
 
 \section{Future Work}
 
