@@ -202,6 +202,8 @@ The following subsections describe each one of the four views offered by \system
 
 A focus of the current implementation is on scalability to many workers and long running queries. More aggregations have to be done by the database itself. Most importantly, in the fragment visualization that shows spans for all events we should limit the data that is being downloaded and rendered to what the user can see. With the architecture as explained in Section~\ref{sec:back}, we are able to express these filter conditions as queries.
 
+Besides performance improvements, we plan to integrate X-trace and its visualization to offer the orthogonal view and allow users to trace how tuple batches flow through the operators and between operators. Combined with the visualizations described in this paper, it will form a powerful debugging tool that will help us to better understand and improve query execution.
+
 \bibliographystyle{abbrv}
 \bibliography{paper}
 
