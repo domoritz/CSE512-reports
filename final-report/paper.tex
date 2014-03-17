@@ -5,8 +5,9 @@
 \usepackage{color}
 \usepackage[pdftex]{hyperref}
 \usepackage{xspace}
-
 \usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
 
 
 \newcommand*{\system}{OGEN\xspace}
@@ -189,9 +190,21 @@ The following subsections describe each one of the four views offered by \system
 
 The \fragment view comprises two charts: the aggregation chart and the workers chart.
 
-
-  
-
+\begin{figure}[ht]
+  \centering
+  \begin{subfigure}[b]{0.49\columnwidth}
+    \includegraphics[width=\columnwidth]{images/skew}
+    \caption{Data skew.}
+    \label{fig:skew}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.49\columnwidth}
+    \includegraphics[width=\columnwidth]{images/no-skew}
+    \caption{No data skew.}
+    \label{fig:no-skew}
+  \end{subfigure}
+  \caption{The network view shows a distinctive pattern when there is data skew. Figure~\ref{fig:skew} shows that most tuples are sent to worker 1 and 5 (origin: x-axis, destination: y-axis).}
+  \label{fig:network}
+\end{figure}
 
 % use the word spans when referring to events with duration (used in dapper)
 
@@ -205,6 +218,8 @@ The \fragment view comprises two charts: the aggregation chart and the workers c
 % Examples
 
 % Thierry + Dom
+
+
 
 \textbf{Discussion:}
 
