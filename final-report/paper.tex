@@ -109,29 +109,37 @@ into how the query was executed on the available resources and quickly
 identify the source(s) of the performance penalty.
 
 We found that the performance of the query might be affected by the following
-factors, which influenced :
+factors, which greatly influenced the design of our visualization tool:
 \begin{itemize}
-   \item 
+   \item \emph{Wrong/unoptimized physical query plan.} We manually analyzed
+several physical query plans and discovered that some queries were poorly
+optimized. This led us to design a view that allows interactive exploration of
+the physical query plan (mapped to a graph of query operators). 
+   \item \emph{Stragglers, tail latency, expensive query operators, poor
+scheduling.} Our targeted systems are \emph{distributed} databases. Therefore,
+as the query is executed in a distributed environment, the query coordinator
+has to wait until all the workers finish executing their assigned tasks. To
+give insight into how the tasks are distributed and executed at each workers,
+we designed a view that shows the cluster utilization over time and at each
+worker.
+   \item \emph{Poor data partitioning, data skew.} Network traffic can cause
+serious delay when executing a distributed query. Due to poor data
+partitioning, workers might need to send unnecessary big amount of data between
+each other. We designed a view that allows the developer/programmer to analyze
+the data traffic generated while executing the query.  
 \end{itemize} 
 
 % Why did we choose the visualization
 % How it is implemented
 % explain how events and logs are used to create the raw data for vis
 
-\begin{itemize}
-    \item determine possible causes (data skew, stragglers, etc.) for why a query might be slow and design visualizations to
-help
-    \item we designed three views - physical query plan, fragment view, communication view.
-\end{itemize}
-
-
-\system's frontend is embedded into Myria's web frontend and provides comprehensive performance views to the user. There are 4 views in total that allow the user to visualize query performance details under different angles:
-\begin{itemize}
-    \item Physical Query Plan view: this view allows the user to connect the query she wrote with the physical query plan that the query optimizer generates.
-    \item etc. 
-\end{itemize}
-
-The front and back end of \system are highly decoupled so that it can be used not only with Myria but also with other systems such as Spark or Hadoop. In Section~\ref{sec:back} we illustrate how we implemented log collections and aggregation in Myria.
+\system's architecture (Fig.~\ref{fig:arch}) consists of a back-end,
+used as a plug-in interface for the distributed database system targeted, and a
+front-end which implements the views described above. The front-end and
+back-end of \system are highly decoupled so that it can be used not only with
+Myria but also with other systems such as Spark or Hadoop. In
+Section~\ref{sec:back} we illustrate how we implemented log collections and
+aggregation in Myria.
 
 \subsection{Back-end}
 \label{sec:back}
@@ -145,7 +153,7 @@ We switched to a different approach as shown in Figure~\ref{fig:arch} where logs
 For example, the data for how many workers are working on a certain fragment as described in Section~\ref{sec:fragments} is generated from the event log using a query to select only events for the root operators (the operators that have no parent in the same fragment) in each fragment and a custom map function that carries state. The state is an integer that is incremented when the operator is called on a worker and decremented when the operator returns.
 
 \begin{figure}[ht]
-  \includegraphics[width=\columnwidth]{viz_arch}
+  \includegraphics[width=\columnwidth]{images/viz_arch}
   \caption{Overview of the log collection and transformation architecture. Raw event logs are collected on each worker. The data is stored in relations. To download the data, a query has to be executed.}
   \label{fig:arch}
 \end{figure}
@@ -178,6 +186,12 @@ The following subsections describe each one of the four views offered by \system
 \subsubsection{Fragment execution view}
 
 % Adriana
+
+The \fragment view comprises two charts: the aggregation chart and the workers chart.
+
+
+  
+
 
 % use the word spans when referring to events with duration (used in dapper)
 
