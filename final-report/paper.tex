@@ -76,6 +76,16 @@ The proposed visualizations can easily be applied to other DDBMS as well (e.g. S
 
 \section{Introduction}
 
+Database query performance is often unpredictable, specially when the DBMS is distributed. This requires database 
+administrators to spend significant amounts of time and effort isolating and debugging the root cause of performance 
+problems. These may include skewed data partitioning or run-time issues, such as resource contention or 
+adverse network conditions.  
+
+Our goal is to build a visualization tool designed to help a database administrator understand the data flow and run-time
+performance during query execution in a Distributed Database Management System (DDBMS). Using our tool, the
+database programmer or administrator could quickly discover run-time bottlenecks as well as problematic data skew issues, 
+saving them significant guesswork and programming effort to identify the appropriate logs to analyze. 
+
 % Umar
 
 % What is myria, how does it work (look at report from last quarter but shorter), which query languages are supported
