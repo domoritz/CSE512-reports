@@ -8,6 +8,7 @@
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{listings}
 
 
 \newcommand*{\system}{OGEN\xspace}
@@ -52,7 +53,7 @@ breaklinks=true,
 \title{\papertitle}
 \numberofauthors{1}
 \author{\alignauthor Umar Javed, Thierry Moreau, Dominik Moritz, Adriana Szekeres \\
-\affaddr{Dept. of Computer Science, University of Washington} \\ \affaddr{ Seattle, Washington, USA} \\
+\affaddr{Dept. of Computer Science, University of Washington} \\ \affaddr{Seattle, Washington, USA} \\
 \email{\texttt{\{ujaved, moreau, domoritz, aaasz\}@cs.washington.edu}}
 }
 
@@ -86,6 +87,7 @@ The proposed visualizations can easily be applied to other DDBMS as well (e.g. S
 \begin{itemize}
     \item problem: hard to learn why a query is slow
     \item motivation: help developers/programmers dig what the problems might be
+    \item Questions: find data/execution skew, identify performance bottlenecks, visualize data flow in the system (elaborate on each point)...
 \end{itemize}
 
 
@@ -165,7 +167,7 @@ We highly suggest that developers use the second approach when porting \system t
 
 \subsection{Front-end}
 
-The Myria web front-end server is written in Python and runs on Google App Engine. \system's user-interface (UI) is embedded into Myria's web front-end. We build \system's UI using D3\cite{2011-d3} to deliver an interactive visualization experience to the user. D3 is a JavaScript framework for data visualization on the web. We used visualization techniques such as \emph{focus+context}\cite{furnas1986generalized} that possible to implement conveniently using D3.
+The Myria web front-end server is written in Python and runs on Google App Engine\footnote{\url{https://developers.google.com/appengine/}}. \system's user-interface (UI) is embedded into Myria's web front-end. We build \system's UI using D3\cite{2011-d3} to deliver an interactive visualization experience to the user. D3 is a JavaScript framework for data visualization on the web. We used visualization techniques such as \emph{focus+context}\cite{furnas1986generalized} that possible to implement conveniently using D3.
 
 \system's front-end gets data from the Myria server as JSON and CSV files. JSON objects are used to describe the physical queryplan. CSV files contain logs on query execution at the fragment and operator level as well as data exchange between workers at different stages of the query execution.
 
@@ -187,6 +189,11 @@ The following subsections describe each one of the four views offered by \system
 
 % Thierry
 
+% Figures
+% 1: Graph with back-edge
+% 2: Large Graph expanded vs. large Graph reduced vs. large graph expanded -1
+
+
 The \graph view allows the user to selectively browse different performance visualizations tied to a given query execution. The \graph view provides as the name indicates, a visualization of the physical query plan. A query plan is an ordered set of steps used to access data in database management systems. The physical query plan is represented by a graph where each node represents a query fragment, and each link represents inter-worker communication from one query fragment to the next. Each query fragment is a collection of query operators. One can think of a query fragment as a job unit that gets scheduled on a cluster of machines. Consequently transitioning from one query fragment to another generally leads to all-to-all communication between worker nodes on the cluster. 
 
 The user can perform three classes of actions that will render a new visualization in the performance panel:
@@ -198,7 +205,7 @@ The user can perform three classes of actions that will render a new visualizati
     
 \end{itemize}
 
-\textbf{Graph Rendering:} We use D3 to render the \graph graph, which allows us to support various interactions and transistions. We use GraphViz \cite{Ellson01graphviz} in the backend to generate graph layout information. GraphViz allows us to generate graph layouts that are optimized to minimize area footprint. The layout information is then fed into a D3-based rendering engine which supports various interactions and animations.
+\textbf{Graph Rendering:} We use D3 \cite{d3} to render the \graph graph, which allows us to support various interactions and transistions. We use GraphViz \cite{Ellson01graphviz} in the backend to generate graph layout information. GraphViz allows us to generate graph layouts that are optimized to minimize area footprint. The layout information is then fed into a D3-based rendering engine which supports various interactions and animations.
 
 \textbf{Graph Navigation:} A query plan can be arbitrarily large. Thus we offer two mechanisms that facilitate exploration of the graph for the user: (1) expanding/reducing fragments and (2) zooming. The first mechanism can reduce the size of a graph by a constant factor by collapsing operators that compose a fragment into a single fragment node. The user can click once on a collapsed fragment to expand it, and click once on an expanded fragment to collapse it. Expanding or reducing a node can cause large changes in the graph layout as GraphViz changes the graph layout to minimize overall area. To address these layout changes, we implemented transitions to allow the user to track the fragments as those get reshuffled. The second mechanism that facilitates exploration of the graph for the user is zooming. This feature was implemented in D3 and allows the user to quickly jump from one part of the graph to the next, by zooming in and out of the graph view.
 
@@ -242,6 +249,29 @@ schedule shows what operators the worker executed and for how long.
 
 \section{Evaluation}
 
+We used \system to examine real world database queries that ran on Myria. We base our analysis on the different visualizations that were generated by \system and present examples where the \system helped us better identify (1) data skew, (2) execution skew, (3) performance bottlenecks. 
+
+We explore a simple join query we performed on one million tuples extracted from Twitter data. This query joins Twitter followers and followees by user ID. The query written in SQL is expressed below.
+
+\begin{lstlisting}
+SELECT *
+FROM twitter S, twitter R
+WHERE S.follower = R.followee
+\end{lstlisting}
+
+The resulting \graph visualization is displayed in ~\ref{fig:TODO}. The user will navigate the \graph visualization in the browser panel in the next case studies to identify several performance symptoms.
+
+
+% How it helps
+% Examples
+
+% Thierry + Dom
+
+\subsection{Case 1: Identifying Performance Bottlenecks using the \overall View}
+
+%dom
+
+\subsection{Case 1: Identifying Data Skew using the \network View}
 
 \begin{figure}[ht]
   \centering
@@ -258,16 +288,6 @@ schedule shows what operators the worker executed and for how long.
   \caption{The network view shows a distinctive pattern when there is data skew. Figure~\ref{fig:skew} shows that most tuples are sent to worker 1 and 5 (origin: row, destination: column).}
   \label{fig:network}
 \end{figure}
-
-
-In this section we will evaluate the different visualizations and elaborate on actual examples where the visualization helped us to find data or execution skew.
-
-% How it helps
-% Examples
-
-% Thierry + Dom
-
-\subsection{Network visualization}
 
 The network visualization at a glance shows how much data was sent between workers. Figure~\ref{fig:network} compares the communication between workers. In Figure~\ref{fig:skew} one can see that most of the data is sent to worker~1 and then worker~5.
 
