@@ -86,7 +86,19 @@ saving them significant guesswork and programming effort to identify the appropr
 is called \system, which uses profiling logs from Myria \cite{myria} as the prototype DDMS. Myria is a distributed 
 database platform that provides \emph{big data management and analytics as a service} primarily for scientific applications.
 Myria takes queries in high-level query languages, such as SQL, translating them into physical query plans and finally executing
-them in parallel. Currently 
+them in parallel. Currently, Myria does not offer a visualization tool designed to show the physical query plan, job execution and network 
+communication between distributed workers. \system allows the programmer/database administrator to visualize the following aspects
+of query execution.
+
+\begin{itemize}
+
+\item An interactive visualization of the physical query plan. The physical query plan in Myria is composed of
+a DAG of fragments, where each DAG link represents communication between workers, possibly over the network. 
+\system displays this DAG in an interactive fashion with clickable elements for fragment nodes and communication links. 
+This DAG also represents a high-level data flow in the DDBMS. 
+
+
+\end{itemize}
 
 
 % Umar
@@ -99,12 +111,7 @@ them in parallel. Currently
 % contributions
 % explain difference between execution and data skew
 
-
-\begin{itemize}
-    \item problem: hard to learn why a query is slow
-    \item motivation: help developers/programmers dig what the problems might be
-    \item Questions: find data/execution skew, identify performance bottlenecks, visualize data flow in the system (elaborate on each point)...
-\end{itemize}
+% \item Questions: find data/execution skew, identify performance bottlenecks, visualize data flow in the system (elaborate on each point)...
 
 
 \section{Related Work}
