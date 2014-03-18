@@ -272,7 +272,7 @@ The resulting \graph visualization is displayed in ~\ref{fig:TODO}. The user wil
 
 %dom
 
-\subsection{Case 1: Identifying Data Skew using the \network View}
+\subsection{Case 2: Identifying Data Skew using the \network View}
 
 \begin{figure}[ht]
   \centering
@@ -290,7 +290,12 @@ The resulting \graph visualization is displayed in ~\ref{fig:TODO}. The user wil
   \label{fig:network}
 \end{figure}
 
-The network visualization at a glance shows how much data was sent between workers. Figure~\ref{fig:network} compares the communication between workers. In Figure~\ref{fig:skew} one can see that most of the data is sent to worker~1 and then worker~5.
+The \network visualization at a glance shows how much data was sent between workers by one query fragment to the next. The two \network views in Figure~\ref{fig:no-skew} and Figure~\ref{fig:skew} were obtained by selecting the Frag0$\rightarrow$Frag2 and Frag1$\rightarrow$Frag2 edges respectively in the \graph view. Figure~\ref{fig:network} displays aggregate data communication between workers. In Figure~\ref{fig:no-skew} the amount of data sent from each worker to every other worker is balanced as opposed to Figure~\ref{fig:skew} where one can see that the volume of data sent to worker~1 and worker~5 outweights data sent to the other workers in the system. This apparent data skew could be caused by partitioning issues.
+
+\subsection{Case 3: Identifying Execution Skew using the \fragment View}
+The \fragment visualization allows the user to dive down into query execution schedules at the worker level.
+
+
 
 \section{Conclusion}
 
