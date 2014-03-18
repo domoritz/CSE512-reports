@@ -64,7 +64,6 @@ breaklinks=true,
 We propose a visualization system for understanding and exploring query execution and data movement in a distributed database management system (DDBMS). Our tool provides insight into: (1) data flow between query fragments and between workers, (2) query execution and operator dependencies, (3) cluster utilization, (4) network utilization. Our tool, which we call \system, helps developers understand and improve query execution, and provides insight into common problems such as data skew or performance bottlenecks.
 
 In particular, \system is built to inspect query execution in Myria\footnote{\url{http://myria.cs.washington.edu/}}, a distributed big data management system currently being developed in the UW CSE database group. Myria aims towards building a distributed database platform to provide \emph{big data management and analytics as a service} primarily for scientific applications.
-
 The proposed visualizations can easily be applied to other DDBMS as well (e.g. Spark, Hadoop).
 
 \end{abstract}
@@ -83,7 +82,12 @@ adverse network conditions.
 Our goal is to build a visualization tool designed to help a database administrator understand the data flow and run-time
 performance during query execution in a Distributed Database Management System (DDBMS). Using our tool, the
 database programmer or administrator could quickly discover run-time bottlenecks as well as problematic data skew issues, 
-saving them significant guesswork and programming effort to identify the appropriate logs to analyze. 
+saving them significant guesswork and programming effort to identify the appropriate logs to analyze. Our visualization tool
+is called \system, which uses profiling logs from Myria \cite{myria} as the prototype DDMS. Myria is a distributed 
+database platform that provides \emph{big data management and analytics as a service} primarily for scientific applications.
+Myria takes queries in high-level query languages, such as SQL, translating them into physical query plans and finally executing
+them in parallel. Currently 
+
 
 % Umar
 
@@ -95,7 +99,6 @@ saving them significant guesswork and programming effort to identify the appropr
 % contributions
 % explain difference between execution and data skew
 
-\todo{write me}
 
 \begin{itemize}
     \item problem: hard to learn why a query is slow
