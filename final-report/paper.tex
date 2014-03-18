@@ -187,7 +187,7 @@ The following subsections describe each one of the four views offered by \system
 
 % Thierry
 
-The \graph view allows the user to selectively browse different performance visualizations tied to a given query execution. The \graph view provides as the name indicates, a visualization of the physical query plan. A query plan is an ordered set of steps used to access data in database management systems. The physical query plan is represented by a graph where each node represents a query fragment, and each link represents inter-worker communication from one query fragment to the next. Each query fragment is a collection of query operators. One can think of a query fragment as a job unit that gets scheduled on a cluster of machines. Consequently transitioning from one query fragment to another generally leads to all-to-all communication between worker nodes on the cluster. 
+The \graph view allows the user to selectively browse different performance visualizations tied to a given query execution. The \graph view provides as the name indicates, a visualization of the physical query plan. A query plan is an ordered set of steps used to access data in database management systems. The physical query plan is represented by a graph where each node represents a query fragment, and each link represents inter-worker communication from one query fragment to the next. Each query fragment is a collection of query operators. One can think of a query fragment as a job unit that gets scheduled on a cluster of machines. Consequently transitioning from one query fragment to another generally leads to all-to-all communication between worker nodes on the cluster.
 
 The user can perform three classes of actions that will render a new visualization in the performance panel:
 \begin{itemize}
@@ -195,7 +195,7 @@ The user can perform three classes of actions that will render a new visualizati
     \item \textbf{Empty selection:} by default if no fragments or edges are selected in the \graph view, an \overall visualization is rendered in the performance panel. This visualization displays the aggregate worker utilization over time for each fragment and provides cluster utilization data at a glance.
     \item \textbf{Fragment selection:} when selecting a fragment, a \fragment visualization gets rendered in the performance panel. The \fragment visualization provides aggregate cluster utilization information complemented by per-worker task schedules. When a fragment is selected, the operands inside of the fragment in the \graph view are color-coded to allow the user to easily match each task in the per-worker task schedule in the performance window with the corresponding query operator in the browser window.
     \item \textbf{Edge selection:} upon selecting one or more fragment-to-fragment edges, a \network visualization gets displayed, providing information on inter-worker communication from one query fragment to the next.
-    
+
 \end{itemize}
 
 \textbf{Graph Rendering:} We use D3 to render the \graph graph, which allows us to support various interactions and transistions. We use GraphViz \cite{Ellson01graphviz} in the backend to generate graph layout information. GraphViz allows us to generate graph layouts that are optimized to minimize area footprint. The layout information is then fed into a D3-based rendering engine which supports various interactions and animations.
