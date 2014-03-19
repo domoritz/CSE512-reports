@@ -83,7 +83,7 @@ Our goal is to build a visualization tool designed to help a database administra
 performance during query execution in a Distributed Database Management System (DDBMS). Using our tool, the
 database programmer or administrator could quickly discover run-time bottlenecks as well as problematic data skew issues, 
 saving them significant guesswork and programming effort to identify the appropriate logs to analyze. Our visualization tool
-is called \system, which uses profiling logs from Myria \cite{myria} as the prototype DDMS. Myria is a distributed 
+is called \system, which uses profiling logs from \emph{Myria} \cite{myria} as the prototype DDMS. Myria is a distributed 
 database platform that provides \emph{big data management and analytics as a service} primarily for scientific applications.
 Myria takes queries in high-level query languages, such as SQL, translating them into physical query plans and finally executing
 them in parallel. Currently, Myria does not offer a visualization tool designed to show the physical query plan, job execution and network 
@@ -96,6 +96,12 @@ of query execution.
 a DAG of fragments, where each DAG link represents communication between workers, possibly over the network. 
 \system displays this DAG in an interactive fashion with clickable elements for fragment nodes and communication links. 
 This DAG also represents a high-level data flow in the DDBMS. 
+
+\item A view for cluster utilization and operator performance for each \emph{Myria} segment. Each segment is composed of
+multiple sequential database operators running on the same worker. Upon clicking on a collapsed segment node in the
+query plan DAG, the node expands to display the operators comprising the segment and renders the fragment execution view.
+The fragment execution view visualizes the utilization of the cluster by showing whether each worker is busy working 
+on the selected fragment. It also breaks down the work done by each worker into operators composing the fragment. 
 
 
 \end{itemize}
