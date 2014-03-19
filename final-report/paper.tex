@@ -6,7 +6,10 @@
 \usepackage[pdftex]{hyperref}
 \usepackage{xspace}
 \usepackage{graphicx}
+
 \usepackage{caption}
+% Bug in my version of the caption package
+\DeclareCaptionType{copyrightbox}
 \usepackage{subcaption}
 \usepackage{listings}
 
@@ -61,10 +64,21 @@ breaklinks=true,
 
 \begin{abstract}
 
-We propose a visualization system for understanding and exploring query execution and data movement in a distributed database management system (DDBMS). Our tool provides insight into: (1) data flow between query fragments and between workers, (2) query execution and operator dependencies, (3) cluster utilization, (4) network utilization. Our tool, which we call \system, helps developers understand and improve query execution, and provides insight into common problems such as data skew or performance bottlenecks.
+We propose a visualization system to explore and understand query
+execution and data movement in a distributed database management system
+(DDBMS). Our tool provides insight into: (1) data flow between query segments
+and between workers, (2) query execution and operator dependencies, (3) cluster
+utilization, (4) network utilization. Our tool, \system, helps
+developers understand and improve query execution, and provides insight into
+common problems such as data skew or performance bottlenecks.
 
-In particular, \system is built to inspect query execution in Myria\footnote{\url{http://myria.cs.washington.edu/}}, a distributed big data management system currently being developed in the UW CSE database group. Myria aims towards building a distributed database platform to provide \emph{big data management and analytics as a service} primarily for scientific applications.
-The proposed visualizations can easily be applied to other DDBMS as well (e.g. Spark, Hadoop).
+In particular, \system is built to inspect query execution in
+Myria\footnote{\url{http://myria.cs.washington.edu/}}, a distributed big data
+management system currently being developed in the UW CSE database group. Myria
+aims towards building a distributed database platform to provide \emph{big data
+management and analytics as a service} primarily for scientific applications.
+The proposed visualizations can easily be applied to other DDBMS as well (e.g.
+Spark, Hadoop).
 
 \end{abstract}
 
@@ -74,10 +88,11 @@ The proposed visualizations can easily be applied to other DDBMS as well (e.g. S
 
 \section{Introduction}
 
-Database query performance is often unpredictable, specially when the DBMS is distributed. This requires database 
-administrators to spend significant amounts of time and effort isolating and debugging the root cause of performance 
-problems. These may include skewed data partitioning or run-time issues, such as resource contention or 
-adverse network conditions.  
+Database query performance is often unpredictable, especially when the DBMS is
+distributed. This requires programmers or database administrators to spend
+significant amounts of time and effort isolating and debugging the root cause
+of performance problems. These may include skewed data partitioning or run-time
+issues, such as resource contention or adverse network conditions.
 
 Our goal is to build a visualization tool designed to help a database administrator understand the data flow and run-time
 performance during query execution in a Distributed Database Management System (DDBMS). Using our tool, the
@@ -92,21 +107,28 @@ of query execution.
 
 \begin{itemize}
 
-\item An interactive visualization of the physical query plan. The physical query plan in Myria is composed of
-a DAG of fragments, where each DAG link represents communication between workers, possibly over the network. 
-\system displays this DAG in an interactive fashion with clickable elements for fragment nodes and communication links. 
-This DAG also represents a high-level data flow in the DDBMS. 
+\item An interactive visualization of the physical query plan. The physical
+query plan is composed of a DAG of query \emph{fragments}. A query
+fragment is a subtree of the query execution plan that is separated from the
+rest of the plan by a network boundary. This means that the operators inside a
+query fragment can be executed by a single thread. Each fragment is scheduled
+to run on multiple workers, which means each worker thread executes the same set of
+operators inside the fragment, but on different data. Each DAG link represents
+communication between workers, possibly over the network.  \system displays
+this DAG in an interactive fashion with clickable elements for fragment nodes
+and communication links.  This DAG also represents a high-level data flow in
+the DDBMS.
 
-\item A view for cluster utilization and operator performance for each \emph{Myria} segment. Each segment is composed of
-multiple sequential database operators running on the same worker. Upon clicking on a collapsed segment node in the
-query plan DAG, the node expands to display the operators comprising the segment and renders the fragment execution view.
+\item A view for cluster utilization and operator performance for each query fragment. Each fragment is composed of
+multiple sequential database operators running on the same worker. Upon clicking on a collapsed fragment node in the
+query plan DAG, the node expands to display the operators comprising the fragment and renders the fragment execution view.
 The fragment execution view visualizes the utilization of the cluster by showing whether each worker is busy working 
 on the selected fragment. It also breaks down the work done by each worker into operators composing the fragment.
 
 \item A view for communication between workers. A directed link between two fragments in the physical query plan DAG
 represents source workers sending tuples to destination workers. Upon clicking on a link, the visualization renders the
 worker communication view. This shows the aggregate number of tuples exchanged between workers as well as a time series
-charting the number of tuples exchanged over time.   
+charting the number of tuples exchanged over time.
 
 \end{itemize}
 
