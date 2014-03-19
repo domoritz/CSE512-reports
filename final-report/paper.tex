@@ -67,7 +67,6 @@ breaklinks=true,
 We propose a visualization system for understanding and exploring query execution and data movement in a distributed database management system (DDBMS). Our tool provides insight into: (1) data flow between query fragments and between workers, (2) query execution and operator dependencies, (3) cluster utilization, (4) network utilization. Our tool, which we call \system, helps developers understand and improve query execution, and provides insight into common problems such as data skew or performance bottlenecks.
 
 In particular, \system is built to inspect query execution in Myria\footnote{\url{http://myria.cs.washington.edu/}}, a distributed big data management system currently being developed in the UW CSE database group. Myria aims towards building a distributed database platform to provide \emph{big data management and analytics as a service} primarily for scientific applications.
-
 The proposed visualizations can easily be applied to other DDBMS as well (e.g. Spark, Hadoop).
 
 \end{abstract}
@@ -77,6 +76,43 @@ The proposed visualizations can easily be applied to other DDBMS as well (e.g. S
 %\category{H.5.2}{Information Interfaces and Presentation}{Miscellaneous}[Optional sub-category]
 
 \section{Introduction}
+
+Database query performance is often unpredictable, specially when the DBMS is distributed. This requires database 
+administrators to spend significant amounts of time and effort isolating and debugging the root cause of performance 
+problems. These may include skewed data partitioning or run-time issues, such as resource contention or 
+adverse network conditions.  
+
+Our goal is to build a visualization tool designed to help a database administrator understand the data flow and run-time
+performance during query execution in a Distributed Database Management System (DDBMS). Using our tool, the
+database programmer or administrator could quickly discover run-time bottlenecks as well as problematic data skew issues, 
+saving them significant guesswork and programming effort to identify the appropriate logs to analyze. Our visualization tool
+is called \system, which uses profiling logs from \emph{Myria} \cite{myria} as the prototype DDMS. Myria is a distributed 
+database platform that provides \emph{big data management and analytics as a service} primarily for scientific applications.
+Myria takes queries in high-level query languages, such as SQL, translating them into physical query plans and finally executing
+them in parallel. Currently, Myria does not offer a visualization tool designed to show the physical query plan, job execution and network 
+communication between distributed workers. \system allows the programmer/database administrator to visualize the following aspects
+of query execution.
+
+\begin{itemize}
+
+\item An interactive visualization of the physical query plan. The physical query plan in Myria is composed of
+a DAG of fragments, where each DAG link represents communication between workers, possibly over the network. 
+\system displays this DAG in an interactive fashion with clickable elements for fragment nodes and communication links. 
+This DAG also represents a high-level data flow in the DDBMS. 
+
+\item A view for cluster utilization and operator performance for each \emph{Myria} segment. Each segment is composed of
+multiple sequential database operators running on the same worker. Upon clicking on a collapsed segment node in the
+query plan DAG, the node expands to display the operators comprising the segment and renders the fragment execution view.
+The fragment execution view visualizes the utilization of the cluster by showing whether each worker is busy working 
+on the selected fragment. It also breaks down the work done by each worker into operators composing the fragment.
+
+\item A view for communication between workers. A directed link between two fragments in the physical query plan DAG
+represents source workers sending tuples to destination workers. Upon clicking on a link, the visualization renders the
+worker communication view. This shows the aggregate number of tuples exchanged between workers as well as a time series
+charting the number of tuples exchanged over time.   
+
+\end{itemize}
+
 
 % Umar
 
@@ -88,13 +124,7 @@ The proposed visualizations can easily be applied to other DDBMS as well (e.g. S
 % contributions
 % explain difference between execution and data skew
 
-\todo{write me}
-
-\begin{itemize}
-    \item problem: hard to learn why a query is slow
-    \item motivation: help developers/programmers dig what the problems might be
-    \item Questions: find data/execution skew, identify performance bottlenecks, visualize data flow in the system (elaborate on each point)...
-\end{itemize}
+% \item Questions: find data/execution skew, identify performance bottlenecks, visualize data flow in the system (elaborate on each point)...
 
 
 \section{Related Work}
@@ -192,7 +222,24 @@ The following subsections describe each one of the four views offered by \system
 % 2: Large Graph expanded vs. large Graph reduced vs. large graph expanded -1
 
 
-The \graph view allows the user to selectively browse different performance visualizations tied to a given query execution. The \graph view provides as the name indicates, a visualization of the physical query plan. A query plan is an ordered set of steps used to access data in database management systems. The physical query plan is represented by a graph where each node represents a query fragment, and each link represents inter-worker communication from one query fragment to the next. Each query fragment is a collection of query operators. One can think of a query fragment as a job unit that gets scheduled on a cluster of machines. Consequently transitioning from one query fragment to another generally leads to all-to-all communication between worker nodes on the cluster. 
+\begin{figure}[ht]
+  \centering
+  \begin{subfigure}[b]{0.49\columnwidth}
+    \includegraphics[width=0.8\columnwidth]{images/graph_collapsed}
+    \caption{Large query plan collapsed.}
+    \label{fig:graph}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.49\columnwidth}
+    \includegraphics[width=0.8\columnwidth]{images/graph_expanded}
+    \caption{Expanding Fragment 2 reveals its operators.}
+    \label{fig:graph_expanded}
+  \end{subfigure}
+  \caption{The \graph view is used by \system to help the user browse performance visualizations.}
+  \label{fig:graph}
+\end{figure}
+
+
+The \graph view as pictured in Figure~\ref{fig:graph} allows the user to selectively browse different performance visualizations tied to a given query execution. The \graph view provides as the name indicates, a visualization of the physical query plan. A query plan is an ordered set of steps used to access data in database management systems. The physical query plan is represented by a graph where each node represents a query fragment, and each link represents inter-worker communication from one query fragment to the next. Each query fragment is a collection of query operators. One can think of a query fragment as a job unit that gets scheduled on a cluster of machines. Consequently transitioning from one query fragment to another generally leads to all-to-all communication between worker nodes on the cluster. 
 
 
 The user can perform three classes of actions that will render a new visualization in the performance panel:
@@ -204,9 +251,9 @@ The user can perform three classes of actions that will render a new visualizati
 
 \end{itemize}
 
-\textbf{Graph Rendering:} We use D3 \cite{d3} to render the \graph graph, which allows us to support various interactions and transistions. We use GraphViz \cite{Ellson01graphviz} in the backend to generate graph layout information. GraphViz allows us to generate graph layouts that are optimized to minimize area footprint. The layout information is then fed into a D3-based rendering engine which supports various interactions and animations.
+\textbf{Graph Rendering:} We use D3 \cite{d3} to render the \graph graph, which allows us to support various interactions and transistions. We use GraphViz \cite{Ellson01graphviz} in the backend to generate graph layout information. GraphViz allows us to generate graph layouts that are optimized to minimize area footprint. The layout information is then fed into a D3-based rendering engine which supports various interactions and animations techniques.
 
-\textbf{Graph Navigation:} A query plan can be arbitrarily large. Thus we offer two mechanisms that facilitate exploration of the graph for the user: (1) expanding/reducing fragments and (2) zooming. The first mechanism can reduce the size of a graph by a constant factor by collapsing operators that compose a fragment into a single fragment node. The user can click once on a collapsed fragment to expand it, and click once on an expanded fragment to collapse it. Expanding or reducing a node can cause large changes in the graph layout as GraphViz changes the graph layout to minimize overall area. To address these layout changes, we implemented transitions to allow the user to track the fragments as those get reshuffled. The second mechanism that facilitates exploration of the graph for the user is zooming. This feature was implemented in D3 and allows the user to quickly jump from one part of the graph to the next, by zooming in and out of the graph view.
+\textbf{Graph Navigation:} A query plan can be arbitrarily large. Thus we offer two mechanisms that facilitate exploration of the graph for the user: (1) expanding/reducing fragments and (2) zooming. The first mechanism can reduce the size of a graph by a constant factor by collapsing operators that compose a fragment into a single fragment node. The user can click once on a collapsed fragment to expand, and click once on an expanded fragment to collapse it. Expanding or reducing a node can cause large changes in the graph layout as GraphViz changes the graph layout to minimize overall area. This graph reshuffeling is illustrated in Figure~\ref{graph} where expanding Frag2 causes the layout to change. To address these layout changes, we implemented transitions to allow the user to track the fragments as those get reshuffled. The second mechanism that facilitates exploration of the graph for the user is zooming. This feature was implemented in D3 and allows the user to quickly jump from one part of the graph to the next, by zooming in and out of the graph view.
 
 \textbf{Tooltip Information:} \todo{write me}
 
@@ -273,7 +320,16 @@ FROM twitter S, twitter R
 WHERE S.follower = R.followee
 \end{lstlisting}
 
-The resulting \graph visualization is displayed in Figure~\ref{fig:TODO}. The user will navigate the \graph visualization in the browser panel in the next case studies to identify several performance symptoms.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.4\columnwidth]{images/graph_join}
+  \caption{This view shows the \graph for a join.}
+  \label{fig:join}
+\end{figure}
+
+
+The resulting \graph visualization is displayed in Figure~\ref{fig:join}. The user will navigate the \graph visualization in the browser panel in the next case studies to identify several performance symptoms.
 
 
 % How it helps
@@ -306,8 +362,18 @@ The resulting \graph visualization is displayed in Figure~\ref{fig:TODO}. The us
 The \network visualization at a glance shows how much data was sent between workers by one query fragment to the next. The two \network views in Figure~\ref{fig:no-skew} and Figure~\ref{fig:skew} were obtained by selecting the Frag0$\rightarrow$Frag2 and Frag1$\rightarrow$Frag2 edges respectively in the \graph view. Figure~\ref{fig:network} displays aggregate data communication between workers. In Figure~\ref{fig:no-skew} the amount of data sent from each worker to every other worker is balanced as opposed to Figure~\ref{fig:skew} where one can see that the volume of data sent to worker~1 and worker~5 outweights data sent to the other workers in the system. This apparent data skew could be caused by partitioning issues.
 
 \subsection{Case 3: Identifying Execution Skew using the \fragment View}
-The \fragment visualization allows the user to dive down into query execution schedules at the worker level.
 
+\begin{figure}[ht]
+  \includegraphics[width=\columnwidth]{images/execution_skew}
+  \caption{This \fragment view shows heavy execution skew on worker~5.}
+  \label{fig:exec_skew}
+\end{figure}
+
+The \fragment visualization allows the user to dive down into query execution details at the worker level. The \fragment view in Figure~\ref{fig:exec_skew} was obtained by selecting Frag2, which is the fragment that performs the join, in the \graph view. The user can observe at a glance that certain workers produce much more data as a result of the join execution. Particularly, we saw in Case 2 Figure~\ref{fig:skew}, that tuples sent to Fragment 2 from Fragment 1 were heavily skewed towards being sent to worker~1 and worker~5. In Figure~\ref{fig:exec_skew}, the user can now see that as a result of the join, worker~5 ends up producing most tuples that have to be written back to disk. The color scheme used for each worker schedules in the \fragment view is color-coded to match the operators in Figure~\ref{fig:join}. Consequently, one can quickly observe in the \fragment view that worker~5 is busy sending join results from t=2.5s to t=5.0s, which differes from the rest of the workers. Using similar reasoning, one can conclude that worker 5 presents a performance bottleneck in the execution of the query on Myria. Perhaps the user can modify the way the input data set gets partitioned. Alternatively she could change the number of workers allocated for the job. 
+
+\subsection{Discussion}
+
+All in all, \system allows the user to get much more insight into the execution of a query than what was available before, i.e. text-based performance logs, and runtimes. Being able to navigate performance data using a simple interface can indeed facilitate the task of a developper who is designing Myria's back end, or a Myria user who is writing complex queries to process large amounts of data. That said, \system can only help the user visualize query execution performance, but won't necessarily point the user to what she needs to do to improve performance of her query execution. 
 
 
 \section{Conclusion}
