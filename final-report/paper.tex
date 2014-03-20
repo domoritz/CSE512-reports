@@ -129,15 +129,19 @@ understanding, we provide an interactive visualization of the \graph in \system.
 %and communication links.  The \graph also represents a high-level data flow in
 %the DDBMS.
 
-\item A view for cluster utilization and operator performance for each query fragment. Each fragment is composed of
-multiple sequential database operators running on the same worker. Upon clicking on a collapsed fragment node in the
-query plan DAG, the node expands to display the operators comprising the fragment and renders the fragment execution view.
-The fragment execution view visualizes the utilization of the cluster by showing whether each worker is busy working
+\item \emph{How does the cluster visualization vary for each fragment and operator?} 
+%A view for cluster utilization and operator performance for each query fragment. 
+In \emph{Myria}, a fragment is composed of multiple sequential database operators running on the same worker. 
+A programmer will want to understand the cluster utilization at a given time as well as how much time is being spent
+executing an operator. \system provides a \fragment view to aid this understanding. 
+%Upon clicking on a collapsed fragment node in the
+%query plan DAG, the node expands to display the operators comprising the fragment and renders the fragment execution view.
+The \fragment view visualizes the utilization of the cluster by showing whether each worker is busy working
 on the selected fragment. It also breaks down the work done by each worker into operators composing the fragment.
 
 \item A view for communication between workers. A directed link between two fragments in the physical query plan DAG
 represents source workers sending tuples to destination workers. Upon clicking on a link, the visualization renders the
-worker communication view. This shows the aggregate number of tuples exchanged between workers as well as a time series
+\network view. This shows the aggregate number of tuples exchanged between workers as well as a time series
 charting the number of tuples exchanged over time.
 
 \end{itemize}
@@ -291,7 +295,7 @@ The following subsections describe each one of the four views offered by \system
 \end{figure}
 
 
-The \graph view as pictured in Figure~\ref{fig:graph} allows the user to selectively browse different performance visualizations tied to a given query execution. The \graph view provides as the name indicates, a visualization of the physical query plan. A query plan is an ordered set of steps used to access data in database management systems. The physical query plan is represented by a graph where each node represents a query fragment, and each link represents inter-worker communication from one query fragment to the next. Each query fragment is a collection of query operators. One can think of a query fragment as a job unit that gets scheduled on a cluster of machines. Consequently transitioning from one query fragment to another generally leads to all-to-all communication between worker nodes on the cluster.
+The \graph view as pictured in Figure~\ref{fig:graph} allows the user to selectively browse different performance visualizations tied to a given query execution. The \graph view provides as the name indicates, a visualization of the physical query plan. A query plan is an ordered set of steps used to access data in database management systems. The physical query plan is represented by a graph where each node represents a query fragment, and each link represents inter-\network from one query fragment to the next. Each query fragment is a collection of query operators. One can think of a query fragment as a job unit that gets scheduled on a cluster of machines. Consequently transitioning from one query fragment to another generally leads to all-to-all communication between worker nodes on the cluster.
 
 
 The user can perform three classes of actions that will render a new visualization in the performance panel:
@@ -299,7 +303,7 @@ The user can perform three classes of actions that will render a new visualizati
 
     \item \textbf{Empty selection:} by default if no fragments or edges are selected in the \graph view, an \overall visualization is rendered in the performance panel. This visualization displays the aggregate worker utilization over time for each fragment and provides cluster utilization data at a glance.
     \item \textbf{Fragment selection:} when selecting a fragment, a \fragment visualization gets rendered in the performance panel. The \fragment visualization provides aggregate cluster utilization information complemented by per-worker task schedules. When a fragment is selected, the operands inside of the fragment in the \graph view are color-coded to allow the user to easily match each task in the per-worker task schedule in the performance window with the corresponding query operator in the browser window.
-    \item \textbf{Edge selection:} upon selecting one or more fragment-to-fragment edges, a \network visualization gets displayed, providing information on inter-worker communication from one query fragment to the next.
+    \item \textbf{Edge selection:} upon selecting one or more fragment-to-fragment edges, a \network visualization gets displayed, providing information on inter-\network from one query fragment to the next.
 
 \end{itemize}
 
@@ -354,9 +358,9 @@ a usecase for the \overall visualization.
 
 % Write about small multiples view
 
-\subsubsection{Worker communication view}
+\subsubsection{\network view}
 
-The Worker Communication view consists of two charts: the aggregate communication
+The \network view consists of two charts: the aggregate communication
 chart and the time series chart. The aggregate communication chart is a matrix (Figure~\ref{fig:network}) representing
 a cluster of $N$ workers. Each cell $m,n$ in the matrix represents the total number of tuples sent
 by worker $m$ to worker $n$ during the query execution. We chose to use the colors from color brewer\cite{harrower2003colorbrewer} and interpolated the colors between the steps using the \emph{CIE L*a*b*} interpolation and lightness correction \cite{chromajsaisch}. The colors work in grayscale and can be interpreted by color blind users.
@@ -373,7 +377,7 @@ issues, as discussed in \S \ref{sec:eval}.
 
 \begin{figure}[!ht]
   \includegraphics[width=\columnwidth]{images/networkVis1}
-  \caption{Worker communication matrix chart. Each cell represents the number of exchanged tuples between a
+  \caption{\network matrix chart. Each cell represents the number of exchanged tuples between a
   pair of workers.}
   \label{fig:matrix}
 \end{figure}
@@ -395,7 +399,7 @@ corresponding time series in the time series chart.
 
 \begin{figure}[!ht]
   \includegraphics[width=\columnwidth]{images/networkVis2}
-  \caption{Worker communication time series chart. The user can select multiple cells in the matrix to compare the
+  \caption{\network time series chart. The user can select multiple cells in the matrix to compare the
   corresponding time series.}
   \label{fig:ts}
 \end{figure}
