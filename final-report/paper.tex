@@ -310,7 +310,7 @@ schedule shows what operators the worker executed and for how long.
   \label{fig:operators_chart}
 \end{figure}
 
-% use the word spans when referring to events with duration (used in dapper)
+\todo{use the word spans when referring to events with duration (used in dapper)}
 
 \subsubsection{Overview over all fragments}
 \label{sec:fragments}
@@ -329,14 +329,14 @@ right fragment and is not intended to offer further inside into the causes or pe
 The Worker Communication view consists of two charts: the aggregate communication
 chart and the time series chart. The aggregate communication chart is a matrix representing
 a cluster of $N$ workers. Each cell $m,n$ in the matrix represents the total number of tuples sent
-by worker $m$ to worker $n$ during the query execution. Figure~\ref{fig:matrix} shows this chart along 
+by worker $m$ to worker $n$ during the query execution. Figure~\ref{fig:matrix} shows this chart along
 with the selected link in the query plan DAG. Hovering the mouse over a cell brings up a tooltip
 stating the total number of tuples exchanged between the source and destination workers. The intensity
-of the cell color reflects the number of tuples exchanged, i.e., a larger number translates into a darker color 
+of the cell color reflects the number of tuples exchanged, i.e., a larger number translates into a darker color
 and a smaller number results in a lighter color. The color pallet used is grayscale and hence
 immune to color-blindness issues. The color scale uses LAB interpolation.
-The matrix chart representing aggregate communication 
-between workers help uncover data skew issues, as discussed in \S \ref{sec:eval}. 
+The matrix chart representing aggregate communication
+between workers help uncover data skew issues, as discussed in \S \ref{sec:eval}.
 
 We initially considered having a chord diagram\footnote{\url{http://bl.ocks.org/mbostock/4062006}} instead of a matrix
 for the aggregate communication chart. But feedback during the progress presentation session convinced us that
@@ -352,20 +352,20 @@ part of future work.
   \label{fig:matrix}
 \end{figure}
 
-When the user clicks on a matrix cell, they are able to view the breakdown of the worker pair communication in a 
-time series chart below the matrix. The user can select multiple such cells to compare different time 
+When the user clicks on a matrix cell, they are able to view the breakdown of the worker pair communication in a
+time series chart below the matrix. The user can select multiple such cells to compare different time
 series. Figure~\ref{fig:ts} shows an example when the user selected two pairs: (8-2) and (7-6). The x-axis shows
 time in seconds and y-axis shows number of tuples exchanged between the source and destination workers.
 Just looking at the matrix chart it is evident that there is more data exchanged between the source-destination pair
 (8-2) than the pair (7-6). But as the time series comparison shows, there is more communication between (7-6)
-than (8-2) for the last 2.5 seconds of the query execution. This points to interesting patterns as to the rate at which 
+than (8-2) for the last 2.5 seconds of the query execution. This points to interesting patterns as to the rate at which
 work is done at different workers at different stages of the execution. Distinct points on the lines are highlighted as
-black dots. Hovering the cursor over a dot shows the information for that data point in a tooltip. Meanwhile the cells 
+black dots. Hovering the cursor over a dot shows the information for that data point in a tooltip. Meanwhile the cells
 in the matrix remain highlighted with the same color used to draw the corresponding time series line. This aids in the
-user keeping track of the mapping between the matrix cell and the corresponding time series line. We also provide 
+user keeping track of the mapping between the matrix cell and the corresponding time series line. We also provide
 a 'clear selection' button that erases everything from the time series chart upon clicking. Finally we provide the
-functionality whereby clicking a row or column label selects every cell in that row or column and displays the 
-corresponding time series in the time series chart. 
+functionality whereby clicking a row or column label selects every cell in that row or column and displays the
+corresponding time series in the time series chart.
 
 \begin{figure}[!ht]
   \includegraphics[width=\columnwidth]{images/networkVis2}
@@ -474,7 +474,7 @@ tail latencies, poor data partitioning, which led us to believe the
 visualization techniques we used are appropriate to help the user quickly
 navigate to/find the cause of the performance problem. \system could be easily
 plugged-in with another distributed database system, the only requirement being
-a specific log data format.  
+a specific log data format.
 
 % Capabilities and Limitations
 
