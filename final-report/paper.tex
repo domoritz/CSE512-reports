@@ -97,8 +97,8 @@ issues, such as resource contention or adverse network conditions.
 Our goal is to build a visualization tool designed to help a database administrator understand the data flow and run-time
 performance during query execution in a Distributed Database Management System (DDBMS). Using our tool, the
 database programmer or administrator could quickly discover run-time bottlenecks as well as problematic data skew issues, 
-saving them significant guesswork and programming effort to identify the appropriate logs to analyze. Our visualization tool
-is called \system, which uses profiling logs from \emph{Myria} \cite{myria} as the prototype DDMS. Myria is a distributed 
+saving them significant guesswork and programming effort to identify the appropriate logs to analyze. Our visualization tool,
+\system, uses profiling logs from \emph{Myria} \cite{myria} as the prototype DDMS. Myria is a distributed 
 database platform that provides \emph{big data management and analytics as a service} primarily for scientific applications.
 Myria takes queries in high-level query languages, such as SQL, translating them into physical query plans and finally executing
 them in parallel. Currently, Myria does not offer a visualization tool designed to show the physical query plan, job execution and network 
@@ -399,15 +399,36 @@ All in all, \system allows the user to get much more insight into the execution 
 
 % Adriana
 
-% Capabilities and Limitations
+This paper introduced \system, a visualization tool carefully tailored to help
+database developers or users to quickly identify common distributed databases
+performance bottlenecks, like tail latencies, data skew, etc. Our tool has been
+successfully integrated with the Myria distributed database system, and has already
+been used to identify several bugs, like poor physical query plan optimization,
+tail latencies, poor data partitioning. We believe the visualization techniques
+we used are appropriate to help the user quickly navigate to/find the cause of the
+performance problem. \system could be easily plugged-in with another
+distributed database system, the only requirement being a specific log data
+format.  
 
-\todo{write me}
+% Capabilities and Limitations
 
 \section{Future Work}
 
-A focus of the current implementation is on scalability to many workers and long running queries. More aggregations have to be done by the database itself. Most importantly, in the fragment visualization that shows spans for all events we should limit the data that is being downloaded and rendered to what the user can see. With the architecture as explained in Section~\ref{sec:back}, we are able to express these filter conditions as queries.
+The current implementation focuses on scalability. We managed to some extent to
+address the scalability issues raised by big query plans, large amount of
+workers or long running queries. For example the \network view uses a
+scalable heatmap to show the communication between all the workers in the
+system. However, other techniques have to be further implemented to address
+this issue. One example would be a more interactive query plan graph, which the
+users can zoom. Another example, in the \fragment view that shows spans
+for all events we should limit the data that is being downloaded and rendered
+to what the user can see.
 
-Besides performance improvements, we plan to integrate X-trace and its visualization to offer the orthogonal view and allow users to trace how tuple batches flow through the operators and between operators. Combined with the visualizations described in this paper, it will form a powerful debugging tool that will help us to better understand and improve query execution.
+Besides performance improvements, we plan to integrate X-trace and its
+visualization to offer the orthogonal view that allows users to trace how tuple
+batches flow through the operators and between operators. Combined with the
+visualizations described in this paper, it will form a powerful debugging tool
+that will help uers better understand and improve query execution.
 
 \bibliographystyle{abbrv}
 \bibliography{paper}
