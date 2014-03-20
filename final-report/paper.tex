@@ -64,13 +64,13 @@ breaklinks=true,
 
 \begin{abstract}
 
-We propose a visualization system to explore and understand query
-execution and data movement in a distributed database management system
-(DDBMS). Our tool provides insight into: (1) data flow between query segments
-and between workers, (2) query execution and operator dependencies, (3) cluster
-utilization, (4) network utilization. Our tool, \system, helps
-developers understand and improve query execution, and provides insight into
-common problems such as data skew or performance bottlenecks.
+We propose \system, a visualization tool that helps database developers/users
+explore and understand query execution and data movement in a distributed
+database management system (DDBMS). \system provides quick insight into common
+problems such as data skew or performance bottleneck by leveraging
+visualization techniques to present: (1) data flow between query segments and
+between workers, (2) query execution and operator dependencies, (3) cluster
+utilization, (4) network utilization.
 
 In particular, \system is built to inspect query execution in
 Myria\footnote{\url{http://myria.cs.washington.edu/}}, a distributed big data
@@ -104,10 +104,10 @@ Myria takes queries in high-level query languages, such as SQL, translating them
 them in parallel. Currently, Myria does not offer a visualization tool designed to show the physical query plan, job execution and network
 communication between distributed workers. \system allows the programmer/database administrator to visualize the following aspects
 of query execution.
+\todo{it's not a dag, as we noticed}
 
 \begin{itemize}
 
-\todo{it's not a dag, as we noticed}
 
 \item An interactive visualization of the physical query plan. The physical
 query plan is composed of a DAG of query \emph{fragments}. A query
