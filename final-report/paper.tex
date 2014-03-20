@@ -73,7 +73,7 @@ between workers, (2) query execution and operator dependencies, (3) cluster
 utilization, (4) network utilization.
 
 In particular, \system is built to inspect query execution in
-Myria\footnote{\url{http://myria.cs.washington.edu/}}, a distributed big data
+Myria~\cite{myria}, a distributed big data
 management system currently being developed in the UW CSE database group. Myria
 aims towards building a distributed database platform to provide \emph{big data
 management and analytics as a service} primarily for scientific applications.
@@ -98,7 +98,7 @@ Our goal is to build a visualization tool designed to help a database administra
 performance during query execution in a Distributed Database Management System (DDBMS). Using our tool, the
 database programmer or administrator could quickly discover run-time bottlenecks as well as problematic data skew issues,
 saving them significant guesswork and programming effort to identify the appropriate logs to analyze. Our visualization tool,
-\system, uses profiling logs from \emph{Myria} \cite{myria} as the prototype DDMS. Myria is a distributed
+\system, uses profiling logs from Myria as the prototype DDMS. Myria is a distributed
 database platform that provides \emph{big data management and analytics as a service} primarily for scientific applications.
 Myria takes queries in high-level query languages, such as SQL, translating them into physical query plans and finally executing
 them in parallel. Currently, Myria does not offer a visualization tool designed to show the physical query plan, job execution and network
@@ -149,13 +149,37 @@ charting the number of tuples exchanged over time.
 
 \section{Related Work}
 
-Twitter developed Ambrose\cite{ambrose}, a platform for visualization and real-time monitoring of MapReduce data workflows. They offer three different views to show associated jobs, job dependencies and progress. Ambrose has been released as open source. Ambrose, however, is not suitable for our needs as the abstraction level of jobs is too high and does not capture single operators.
+Ambrose\cite{ambrose} is a platform developed by Twitter to visualize and
+real-time monitor MapReduce data workflows. Ambrose
+offers three different views to show associated jobs, job dependencies and
+progress, which are not suitable for our needs as the abstraction level of jobs
+is too high and does not capture single operators.
 
-Google's Dapper\cite{sigelman2010dapper} is a distributed systems tracing infrastructure and offers fine grained tracing of calls in Google's distributed systems. They also proposed an interface for visualizing traces. Similarly, X-trace\cite{fonseca2007x} was developed as a framework to trace which events cause what other events in a distributed environment. recently, there has been work on visualizing event traces collected in X-trace\footnote{\url{https://github.com/brownsys/X-Trace/tree/master/src/webui/html/interactive}}. Due to the importance of these kinds of debug facilities, Twitter closely modeled Zipkin\cite{zipkin} after Dapper and X-trace and released it as open source.
+Google's Dapper\cite{sigelman2010dapper} is a distributed systems tracing
+infrastructure that offers fine-grained tracing of calls in Google's distributed
+systems. They also proposed an interface for visualizing traces. Similarly,
+X-trace\cite{fonseca2007x} was developed as a framework to trace which events
+cause what other events in a distributed environment. Recently, there has been
+work on visualizing event traces collected in
+X-trace\footnote{\url{https://github.com/brownsys/X-Trace/tree/master/src/webui/html/interactive}}.
+Due to the importance of these kinds of debug facilities, Twitter closely
+modeled Zipkin\cite{zipkin} after Dapper and X-trace and released it as open
+source.
 
-Dapper and X-trace focus on how data flows through a distributed system. In \system the visualization focuses on the operators and how the data flows through them. This orthogonal view is better suited for debugging performance bottlenecks in DDBMS and also scales to a larger number of events. Furthermore, in contrast to  we offer different abstraction levels, which enables users to find problems faster and handle larger amounts of profiling data. Also, \system is specifically designed to help developers understand query execution in distributed database system like Myria as opposed to general traces in distributed systems.
+Dapper and X-trace focus on how data flows through a distributed system. In
+contrast, in \system the visualization focuses on the operators and how the
+data flows through them. This orthogonal view is better suited for debugging
+performance bottlenecks in DDBMSs and also scales to a larger number of events.
+Furthermore, \system offers different abstraction levels, which enables users
+to find problems faster and handle larger amounts of profiling data. Also,
+\system is specifically designed to help developers understand query execution
+in distributed database system as opposed to general traces in distributed
+systems.
 
-Tools to visualize query plans for example in SQL Server, as used to improve performance for the SDSS Sky survey\cite{szalay2002sdss}, focus on optimizing queries and not query execution and have no visualization of data flow, which is necessary to optimize physical query execution.
+Tools to visualize query plans, for example those used to improve the
+performance for the SDSS Sky survey\cite{szalay2002sdss}, focus on optimizing
+queries and not query execution and have no visualization of data flow, which
+is necessary to optimize physical query execution.
 
 \section{Approach}
 \label{sec:approach}
