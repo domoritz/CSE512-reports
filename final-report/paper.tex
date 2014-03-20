@@ -64,7 +64,7 @@ breaklinks=true,
 
 \begin{abstract}
 
-We propose \system, a visualization tool that helps database developers/users
+We propose \system, a visualization tool that helps database developers
 explore and understand query execution and data movement in a distributed
 database management system (DDBMS). \system provides quick insight into common
 problems such as data skew or performance bottleneck by leveraging
@@ -89,32 +89,32 @@ Spark, Hadoop).
 \section{Introduction}
 
 Database query performance is often unpredictable, especially when the database is
-distributed. This requires programmers or database developers to spend
+distributed. This requires database developers to spend
 significant amounts of time and effort isolating and debugging the root cause
 of performance problems. These may include skewed data partitioning or run-time
 issues, such as resource contention or adverse network conditions.
 
 Our goal is to build a visualization tool designed to help a database developer understand the data flow and run-time
 performance during query execution in a Distributed Database Management System (DDBMS). Using our tool, the
-database programmer or developer could quickly discover run-time bottlenecks as well as problematic data skew issues,
+database developer could quickly discover run-time bottlenecks as well as problematic data skew issues,
 saving them significant guesswork and programming effort to identify the appropriate logs to analyze. Our visualization tool,
 \system, uses profiling logs from \emph{Myria} \cite{myria} as the prototype DDBMS. Myria is a distributed
 database platform that provides \emph{big data management and analytics as a service} primarily for scientific applications.
 Myria takes queries in high-level query languages, such as SQL, translating them into physical query plans and finally executing
 them in parallel. Currently, Myria does not offer a visualization tool designed to show the physical query plan, job execution and network
-communication between distributed workers. \system is designed to help the Myria programmer answer the following questions regarding
+communication between distributed workers. \system is designed to help the Myria developer answer the following questions regarding
 their query execution. 
 \system, uses profiling logs from Myria as the prototype DDMS. Myria is a distributed
 database platform that provides \emph{big data management and analytics as a service} primarily for scientific applications.
 Myria takes queries in high-level query languages, such as SQL, translating them into physical query plans and finally executing
 them in parallel. Currently, Myria does not offer a visualization tool designed to show the physical query plan, job execution and network
-communication between distributed workers. \system allows the programmer/database administrator to visualize the following aspects
+communication between distributed workers. \system allows the user to visualize the following aspects
 of query execution.
 
 \begin{itemize}
 \item \emph{How does the data flow through the system between operators?} 
 The overall data flow in a DDBMS is represented by a \graph. It is important
-for the programmer to understand the \graph in order to optimize it. To aid in this
+for the developer to understand the \graph in order to optimize it. To aid in this
 understanding, we provide an interactive visualization of the \graph in \system. 
 
 %The physical
@@ -198,7 +198,7 @@ is necessary to optimize physical query execution.
 The first step in designing \system was to identify the possible causes that
 could affect the execution performance of the query. After we identified
 several such causes, that we will enumerate below, we leveraged visualization
-techniques that we found fit to allow developers/programmers to get insight
+techniques that we found fit to allow developers to get insight
 into how the query was executed on the available resources and quickly
 identify the source(s) of the performance penalty.
 
@@ -219,7 +219,7 @@ worker.
    \item \emph{Poor data partitioning, data skew.} Network traffic can cause
 serious delay when executing a distributed query. Due to poor data
 partitioning, workers might need to send unnecessary big amount of data between
-each other. We designed a view that allows the developer/programmer to analyze
+each other. We designed a view that allows the developer to analyze
 the data traffic generated while executing the query.
 \end{itemize}
 
