@@ -14,7 +14,7 @@
 \usepackage{listings}
 
 
-\newcommand*{\system}{OGEN\xspace}
+\newcommand*{\system}{QuiViz\xspace}
 \newcommand*{\papertitle}{\system: Visualizing Physical Query Execution in a Relational Big Data Management System}
 \newcommand*{\graph}{Physical Query Plan\xspace}
 \newcommand*{\fragment}{Fragment Execution\xspace}
@@ -73,7 +73,7 @@ between workers, (2) query execution and operator dependencies, (3) cluster
 utilization, (4) network utilization.
 
 In particular, \system is built to inspect query execution in
-Myria\footnote{\url{http://myria.cs.washington.edu/}}, a distributed big data
+Myria~\cite{myria}, a distributed big data
 management system currently being developed in the UW CSE database group. Myria
 aims towards building a distributed database platform to provide \emph{big data
 management and analytics as a service} primarily for scientific applications.
@@ -98,7 +98,7 @@ Our goal is to build a visualization tool designed to help a database administra
 performance during query execution in a Distributed Database Management System (DDBMS). Using our tool, the
 database programmer or administrator could quickly discover run-time bottlenecks as well as problematic data skew issues,
 saving them significant guesswork and programming effort to identify the appropriate logs to analyze. Our visualization tool,
-\system, uses profiling logs from \emph{Myria} \cite{myria} as the prototype DDMS. Myria is a distributed
+\system, uses profiling logs from Myria as the prototype DDMS. Myria is a distributed
 database platform that provides \emph{big data management and analytics as a service} primarily for scientific applications.
 Myria takes queries in high-level query languages, such as SQL, translating them into physical query plans and finally executing
 them in parallel. Currently, Myria does not offer a visualization tool designed to show the physical query plan, job execution and network
@@ -149,13 +149,37 @@ charting the number of tuples exchanged over time.
 
 \section{Related Work}
 
-Twitter developed Ambrose\cite{ambrose}, a platform for visualization and real-time monitoring of MapReduce data workflows. They offer three different views to show associated jobs, job dependencies and progress. Ambrose has been released as open source. Ambrose, however, is not suitable for our needs as the abstraction level of jobs is too high and does not capture single operators.
+Ambrose\cite{ambrose} is a platform developed by Twitter to visualize and
+real-time monitor MapReduce data workflows. Ambrose
+offers three different views to show associated jobs, job dependencies and
+progress, which are not suitable for our needs as the abstraction level of jobs
+is too high and does not capture single operators.
 
-Google's Dapper\cite{sigelman2010dapper} is a distributed systems tracing infrastructure and offers fine grained tracing of calls in Google's distributed systems. They also proposed an interface for visualizing traces. Similarly, X-trace\cite{fonseca2007x} was developed as a framework to trace which events cause what other events in a distributed environment. recently, there has been work on visualizing event traces collected in X-trace\footnote{\url{https://github.com/brownsys/X-Trace/tree/master/src/webui/html/interactive}}. Due to the importance of these kinds of debug facilities, Twitter closely modeled Zipkin\cite{zipkin} after Dapper and X-trace and released it as open source.
+Google's Dapper\cite{sigelman2010dapper} is a distributed systems tracing
+infrastructure that offers fine-grained tracing of calls in Google's distributed
+systems. They also proposed an interface for visualizing traces. Similarly,
+X-trace\cite{fonseca2007x} was developed as a framework to trace which events
+cause what other events in a distributed environment. Recently, there has been
+work on visualizing event traces collected in
+X-trace\footnote{\url{https://github.com/brownsys/X-Trace/tree/master/src/webui/html/interactive}}.
+Due to the importance of these kinds of debug facilities, Twitter closely
+modeled Zipkin\cite{zipkin} after Dapper and X-trace and released it as open
+source.
 
-Dapper and X-trace focus on how data flows through a distributed system. In \system the visualization focuses on the operators and how the data flows through them. This orthogonal view is better suited for debugging performance bottlenecks in DDBMS and also scales to a larger number of events. Furthermore, in contrast to  we offer different abstraction levels, which enables users to find problems faster and handle larger amounts of profiling data. Also, \system is specifically designed to help developers understand query execution in distributed database system like Myria as opposed to general traces in distributed systems.
+Dapper and X-trace focus on how data flows through a distributed system. In
+contrast, in \system the visualization focuses on the operators and how the
+data flows through them. This orthogonal view is better suited for debugging
+performance bottlenecks in DDBMSs and also scales to a larger number of events.
+Furthermore, \system offers different abstraction levels, which enables users
+to find problems faster and handle larger amounts of profiling data. Also,
+\system is specifically designed to help developers understand query execution
+in distributed database system as opposed to general traces in distributed
+systems.
 
-Tools to visualize query plans for example in SQL Server, as used to improve performance for the SDSS Sky survey\cite{szalay2002sdss}, focus on optimizing queries and not query execution and have no visualization of data flow, which is necessary to optimize physical query execution.
+Tools to visualize query plans, for example those used to improve the
+performance for the SDSS Sky survey\cite{szalay2002sdss}, focus on optimizing
+queries and not query execution and have no visualization of data flow, which
+is necessary to optimize physical query execution.
 
 \section{Approach}
 \label{sec:approach}
@@ -211,7 +235,7 @@ There are two possible approaches that we explored to collect event logs. The fi
 
 We switched to a more scalable data collection approach approach as shown in Figure~\ref{fig:arch} where logs get written directly into the worker's database as tuples in a relation. When the front-end client requests data, the master executes a query that collects the data and streams the results directly to the requesting client. We found this data collection approach to be more scalable, reliable and faster. More particularly, we are able to write queries to aggregate, filter and transform the collected data.
 
-For example, when querying how many workers are working on a certain fragment at a given time to produce the visualization described in Section~\ref{sec:fragments}, we used a query to select only events in the root operators (the operators that have no parent in the same fragment) for each fragment and a custom map function that carries state. The state is an integer that is incremented when the operator is called on a worker and decremented when the operator returns.
+For example, when querying how many workers are working on a certain fragment at a given time to produce the visualization described in Section~\ref{sec:fragment}, we used a query to select only events in the root operators (the operators that have no parent in the same fragment) for each fragment and a custom map function that carries state. The state is an integer that is incremented when the operator is called on a worker and decremented when the operator returns.
 
 \begin{figure}[ht]
   \includegraphics[width=\columnwidth]{images/viz_arch}
@@ -219,15 +243,12 @@ For example, when querying how many workers are working on a certain fragment at
   \label{fig:arch}
 \end{figure}
 
-We highly suggest that developers use the second approach when porting \system to a new DDBMS.
-
 \subsection{Front-end}
 \label{sec:front}
 
+The Myria web front-end server is written in Python and runs on Google App Engine\footnote{\url{https://developers.google.com/appengine/}}. \system's user-interface (UI) is embedded into Myria's web front-end. We build \system's UI using D3\cite{2011-d3} to deliver an interactive visualization experience to the user. D3 is a JavaScript framework for data visualization on the web.
 
-The Myria web front-end server is written in Python and runs on Google App Engine\footnote{\url{https://developers.google.com/appengine/}}. \system's user-interface (UI) is embedded into Myria's web front-end. We build \system's UI using D3\cite{2011-d3} to deliver an interactive visualization experience to the user. D3 is a JavaScript framework for data visualization on the web. We used visualization techniques such as \emph{focus+context}\cite{furnas1986generalized} that were made possible using D3.
-
-\system's front-end gets data from the Myria server using \system's back-end as JSON and CSV files. JSON objects are used to describe the physical queryplan. CSV files contain logs on query execution at the fragment and operator level as well as data exchange between workers at different stages of the query execution.
+\system's front-end gets data from the Myria server as JSON and CSV files. JSON is used to describe the physical queryplan. CSV files contain logs on query execution at the fragment and operator level as well as data exchange between workers at different stages of the query execution.
 
 \system's web UI is divided into two components: (1) the browser panel which provides a visualization of the \graph, and (2) the performance panel which provides some insight into an element selected in the browser view. The browser panel contains a view of the \graph, rendered as a graph. The user can navigate the \graph by expanding query fragments into the operators that compose it. The user can chose to select a fragment of interest which will render a \fragment visualization of the selected fragment in the performance panel. Alternatively, the user can select an fragment-to-fragment edge in the \graph thus rendering a \network visualization of the selected edge in the performance panel. If no elements are selected in the \graph view, an \overall visualization is rendered in the performance panel, displaying the aggregate worker utilization over time for each fragment.
 
@@ -290,12 +311,13 @@ operators chart. The utilization chart (Figure~\ref{fig:utilization_chart}) show
 how many workers a fragment is running over time. The chart is used to
 quickly reveal any patterns in the schedule, like tail latency, long periods of
 idleness, etc. Execution skew is visible as humps.
-We implemented a small brush (at the top of the figure) that
-allows the user to zoom-in and further analyze the problematic area.
+We implemented \emph{focus+context}\cite{furnas1986generalized} in form of
+a small brush (at the top of the figure) that allows the user to zoom-in and further
+analyze the problematic area without loosing the context of the whole execution.
 
 \begin{figure}[ht]
   \includegraphics[width=\columnwidth]{images/utilization_chart}
-  \caption{The utilization chart. }
+  \caption{The utilization chart.}
   \label{fig:utilization_chart}
 \end{figure}
 
@@ -313,7 +335,7 @@ schedule shows what operators the worker executed and for how long.
 \todo{use the word spans when referring to events with duration (used in dapper)}
 
 \subsubsection{Overview over all fragments}
-\label{sec:fragments}
+\label{sec:overview}
 
 % Dom
 
@@ -473,7 +495,8 @@ tail latencies, poor data partitioning, which led us to believe the
 visualization techniques we used are appropriate to help the user quickly
 navigate to/find the cause of the performance problem. \system could be easily
 plugged-in with another distributed database system, the only requirement being
-a specific log data format.
+a specific log data format. We explained how we collect logs in Myria and recommend
+our approach to developers that are porting \system to a new DDBMS.
 
 % Capabilities and Limitations
 
