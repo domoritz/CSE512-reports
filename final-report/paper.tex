@@ -88,37 +88,46 @@ Spark, Hadoop).
 
 \section{Introduction}
 
-Database query performance is often unpredictable, especially when the DBMS is
-distributed. This requires programmers or database administrators to spend
+Database query performance is often unpredictable, especially when the database is
+distributed. This requires programmers or database developers to spend
 significant amounts of time and effort isolating and debugging the root cause
 of performance problems. These may include skewed data partitioning or run-time
 issues, such as resource contention or adverse network conditions.
 
-Our goal is to build a visualization tool designed to help a database administrator understand the data flow and run-time
+Our goal is to build a visualization tool designed to help a database developer understand the data flow and run-time
 performance during query execution in a Distributed Database Management System (DDBMS). Using our tool, the
-database programmer or administrator could quickly discover run-time bottlenecks as well as problematic data skew issues,
+database programmer or developer could quickly discover run-time bottlenecks as well as problematic data skew issues,
 saving them significant guesswork and programming effort to identify the appropriate logs to analyze. Our visualization tool,
+\system, uses profiling logs from \emph{Myria} \cite{myria} as the prototype DDBMS. Myria is a distributed
+database platform that provides \emph{big data management and analytics as a service} primarily for scientific applications.
+Myria takes queries in high-level query languages, such as SQL, translating them into physical query plans and finally executing
+them in parallel. Currently, Myria does not offer a visualization tool designed to show the physical query plan, job execution and network
+communication between distributed workers. \system is designed to help the Myria programmer answer the following questions regarding
+their query execution. 
 \system, uses profiling logs from Myria as the prototype DDMS. Myria is a distributed
 database platform that provides \emph{big data management and analytics as a service} primarily for scientific applications.
 Myria takes queries in high-level query languages, such as SQL, translating them into physical query plans and finally executing
 them in parallel. Currently, Myria does not offer a visualization tool designed to show the physical query plan, job execution and network
 communication between distributed workers. \system allows the programmer/database administrator to visualize the following aspects
 of query execution.
-\todo{it's not a dag, as we noticed}
 
 \begin{itemize}
+\item \emph{How does the data flow through the system between operators?} 
+The overall data flow in a DDBMS is represented by a \graph. It is important
+for the programmer to understand the \graph in order to optimize it. To aid in this
+understanding, we provide an interactive visualization of the \graph in \system. 
 
-\item An interactive visualization of the physical query plan. The physical
-query plan is composed of a DAG of query \emph{fragments}. A query
-fragment is a subtree of the query execution plan that is separated from the
-rest of the plan by a network boundary. This means that the operators inside a
-query fragment can be executed by a single thread. Each fragment is scheduled
-to run on multiple workers, which means each worker thread executes the same set of
-operators inside the fragment, but on different data. Each DAG link represents
-communication between workers, possibly over the network.  \system displays
-this DAG in an interactive fashion with clickable elements for fragment nodes
-and communication links.  This DAG also represents a high-level data flow in
-the DDBMS.
+%The physical
+%query plan is composed of a directed graph of query \emph{fragments}. A query
+%fragment is a subtree of the query execution plan that is separated from the
+%rest of the plan by a network boundary. This means that the operators inside a
+%query fragment can be executed by a single thread. Each fragment is scheduled
+%to run on multiple workers, which means each worker thread executes the same set of
+%operators inside the fragment, but on different data. Each graph link represents
+%communication between workers, possibly over the network.  \system displays
+%this \graph in an interactive fashion with clickable elements for fragment nodes
+%and communication links.  The \graph also represents a high-level data flow in
+%the DDBMS.
 
 \item A view for cluster utilization and operator performance for each query fragment. Each fragment is composed of
 multiple sequential database operators running on the same worker. Upon clicking on a collapsed fragment node in the
