@@ -211,7 +211,7 @@ There are two possible approaches that we explored to collect event logs. The fi
 
 We switched to a more scalable data collection approach approach as shown in Figure~\ref{fig:arch} where logs get written directly into the worker's database as tuples in a relation. When the front-end client requests data, the master executes a query that collects the data and streams the results directly to the requesting client. We found this data collection approach to be more scalable, reliable and faster. More particularly, we are able to write queries to aggregate, filter and transform the collected data.
 
-For example, when querying how many workers are working on a certain fragment at a given time to produce the visualization described in Section~\ref{sec:fragments}, we used a query to select only events in the root operators (the operators that have no parent in the same fragment) for each fragment and a custom map function that carries state. The state is an integer that is incremented when the operator is called on a worker and decremented when the operator returns.
+For example, when querying how many workers are working on a certain fragment at a given time to produce the visualization described in Section~\ref{sec:fragment}, we used a query to select only events in the root operators (the operators that have no parent in the same fragment) for each fragment and a custom map function that carries state. The state is an integer that is incremented when the operator is called on a worker and decremented when the operator returns.
 
 \begin{figure}[ht]
   \includegraphics[width=\columnwidth]{images/viz_arch}
@@ -219,15 +219,12 @@ For example, when querying how many workers are working on a certain fragment at
   \label{fig:arch}
 \end{figure}
 
-We highly suggest that developers use the second approach when porting \system to a new DDBMS.
-
 \subsection{Front-end}
 \label{sec:front}
 
+The Myria web front-end server is written in Python and runs on Google App Engine\footnote{\url{https://developers.google.com/appengine/}}. \system's user-interface (UI) is embedded into Myria's web front-end. We build \system's UI using D3\cite{2011-d3} to deliver an interactive visualization experience to the user. D3 is a JavaScript framework for data visualization on the web.
 
-The Myria web front-end server is written in Python and runs on Google App Engine\footnote{\url{https://developers.google.com/appengine/}}. \system's user-interface (UI) is embedded into Myria's web front-end. We build \system's UI using D3\cite{2011-d3} to deliver an interactive visualization experience to the user. D3 is a JavaScript framework for data visualization on the web. We used visualization techniques such as \emph{focus+context}\cite{furnas1986generalized} that were made possible using D3.
-
-\system's front-end gets data from the Myria server using \system's back-end as JSON and CSV files. JSON objects are used to describe the physical queryplan. CSV files contain logs on query execution at the fragment and operator level as well as data exchange between workers at different stages of the query execution.
+\system's front-end gets data from the Myria server as JSON and CSV files. JSON is used to describe the physical queryplan. CSV files contain logs on query execution at the fragment and operator level as well as data exchange between workers at different stages of the query execution.
 
 \system's web UI is divided into two components: (1) the browser panel which provides a visualization of the \graph, and (2) the performance panel which provides some insight into an element selected in the browser view. The browser panel contains a view of the \graph, rendered as a graph. The user can navigate the \graph by expanding query fragments into the operators that compose it. The user can chose to select a fragment of interest which will render a \fragment visualization of the selected fragment in the performance panel. Alternatively, the user can select an fragment-to-fragment edge in the \graph thus rendering a \network visualization of the selected edge in the performance panel. If no elements are selected in the \graph view, an \overall visualization is rendered in the performance panel, displaying the aggregate worker utilization over time for each fragment.
 
@@ -290,12 +287,13 @@ operators chart. The utilization chart (Figure~\ref{fig:utilization_chart}) show
 how many workers a fragment is running over time. The chart is used to
 quickly reveal any patterns in the schedule, like tail latency, long periods of
 idleness, etc. Execution skew is visible as humps.
-We implemented a small brush (at the top of the figure) that
-allows the user to zoom-in and further analyze the problematic area.
+We implemented \emph{focus+context}\cite{furnas1986generalized} in form of
+a small brush (at the top of the figure) that allows the user to zoom-in and further
+analyze the problematic area without loosing the context of the whole execution.
 
 \begin{figure}[ht]
   \includegraphics[width=\columnwidth]{images/utilization_chart}
-  \caption{The utilization chart. }
+  \caption{The utilization chart.}
   \label{fig:utilization_chart}
 \end{figure}
 
@@ -313,7 +311,7 @@ schedule shows what operators the worker executed and for how long.
 \todo{use the word spans when referring to events with duration (used in dapper)}
 
 \subsubsection{Overview over all fragments}
-\label{sec:fragments}
+\label{sec:overview}
 
 % Dom
 
@@ -474,7 +472,8 @@ tail latencies, poor data partitioning, which led us to believe the
 visualization techniques we used are appropriate to help the user quickly
 navigate to/find the cause of the performance problem. \system could be easily
 plugged-in with another distributed database system, the only requirement being
-a specific log data format.
+a specific log data format. We explained how we collect logs in Myria and recommend
+our approach to developers that are porting \system to a new DDBMS.
 
 % Capabilities and Limitations
 
