@@ -283,7 +283,7 @@ The user can perform three classes of actions that will render a new visualizati
 % Adriana
 
 The \fragment view comprises two charts: the utilization chart and the
-operators chart. The utilization chart (Fig.~\ref{fig:utilization_chart}) shows on
+operators chart. The utilization chart (Figure~\ref{fig:utilization_chart}) shows on
 how many workers a fragment is running over time. The chart is used to
 quickly reveal any patterns in the schedule, like tail latency, long periods of
 idleness, etc. We implemented a small brush (at the top of the figure) that
@@ -297,7 +297,7 @@ allows the user to zoom-in and further analyze the problematic area.
 
 The utilization chart also implements a brush that allows the user to further
 analyze the query execution by displaying the schedule of each of the worker
-nodes, in the operators chart (Fig.~\ref{fig:operators_chart}). The per-worker
+nodes, in the operators chart (Figure~\ref{fig:operators_chart}). The per-worker
 schedule shows what operators the worker executed and for how long.
 
 
@@ -326,7 +326,7 @@ right fragment and is not intended to offer further inside into the causes or pe
 The Worker Communication view consists of two charts: the aggregate communication 
 chart and the time series chart. The aggregate communication chart is a matrix representing
 a cluster of $N$ workers. Each cell $m,n$ in the matrix represents the total number of tuples sent
-by worker $m$ to worker $n$ during the query execution. Figure \ref{fig:matrix} shows this chart along 
+by worker $m$ to worker $n$ during the query execution. Figure~\ref{fig:matrix} shows this chart along 
 with the selected link in the query plan DAG. Hovering the mouse over a cell brings up a tooltip
 stating the total number of tuples exchanged between the source and destination workers. The intensity
 of the cell color reflects the number of tuples exchanged, i.e., a larger number translates into a darker color 
@@ -349,7 +349,7 @@ part of future work.
 
 When the user clicks on a matrix cell, they are able to view the breakdown of the worker pair communication in a 
 time series chart below the matrix. The user can select multiple such cells to compare different time 
-series. Figure \ref{fig:ts} shows an example when the user selected two pairs: (8-2) and (7-6). The x-axis shows
+series. Figure~\ref{fig:ts} shows an example when the user selected two pairs: (8-2) and (7-6). The x-axis shows
 time in seconds and y-axis shows number of tuples exchanged between the source and destination workers.
 Just looking at the matrix chart it is evident that there is more data exchanged between the source-destination pair
 (8-2) than the pair (7-6). But as the time series comparison shows, there is more communication between (7-6)
