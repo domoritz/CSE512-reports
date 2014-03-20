@@ -308,8 +308,6 @@ schedule shows what operators the worker executed and for how long.
   \label{fig:operators_chart}
 \end{figure}
 
-\todo{use the word spans when referring to events with duration (used in dapper)}
-
 \subsubsection{Overview over all fragments}
 \label{sec:overview}
 
@@ -325,21 +323,17 @@ right fragment and is not intended to offer further inside into the causes or pe
 \subsubsection{Worker communication view}
 
 The Worker Communication view consists of two charts: the aggregate communication
-chart and the time series chart. The aggregate communication chart is a matrix representing
+chart and the time series chart. The aggregate communication chart is a matrix (Figure~\ref{fig:network}) representing
 a cluster of $N$ workers. Each cell $m,n$ in the matrix represents the total number of tuples sent
-by worker $m$ to worker $n$ during the query execution. Figure~\ref{fig:matrix} shows this chart along
-with the selected link in the query plan DAG. Hovering the mouse over a cell brings up a tooltip
-stating the total number of tuples exchanged between the source and destination workers. The intensity
-of the cell color reflects the number of tuples exchanged, i.e., a larger number translates into a darker color
-and a smaller number results in a lighter color. The color pallet used is grayscale and hence
-immune to color-blindness issues. The color scale uses LAB interpolation.
-The matrix chart representing aggregate communication
-between workers help uncover data skew issues, as discussed in \S \ref{sec:eval}.
+by worker $m$ to worker $n$ during the query execution. We chose to use the colors from color brewer\cite{harrower2003colorbrewer} and interpolated the colors between the steps using the \emph{CIE L*a*b*} interpolation and lightness correction \cite{chromajsaisch}. The colors work in grayscale and can be interpreted by color blind users.
 
-We initially considered having a chord diagram\footnote{\url{http://bl.ocks.org/mbostock/4062006}} instead of a matrix
-for the aggregate communication chart. But feedback during the progress presentation session convinced us that
-a chord diagram would suffer from scalability problems. Adding an option for displaying a chord diagram remains
-part of future work.
+The matrix chart representing aggregate communication between workers help uncover data skew
+issues, as discussed in \S \ref{sec:eval}.
+
+% We initially considered having a chord diagram\footnote{\url{http://bl.ocks.org/mbostock/4062006}} instead of a matrix
+%for the aggregate communication chart. But feedback during the progress presentation session convinced us that
+%a chord diagram would suffer from scalability problems. Adding an option for displaying a chord diagram remains
+%part of future work.
 
 \todo{is this figure necessary or is the figure in the evaluation section enough?}
 
@@ -461,8 +455,6 @@ All in all, \system allows the user to get much more insight into the execution 
 
 \section{Conclusion}
 
-% Adriana
-
 This paper introduced \system, a visualization tool carefully tailored to help
 database developers or users to quickly identify common distributed databases
 performance bottlenecks, like tail latencies, data skew, etc. Our tool has been
@@ -485,9 +477,8 @@ workers or long running queries. For example the \network view uses a
 scalable heatmap to show the communication between all the workers in the
 system. However, other techniques have to be further implemented to address
 this issue. One example would be a more interactive query plan graph, which the
-users can zoom. Another example, in the \fragment view that shows spans
-for all events we should limit the data that is being downloaded and rendered
-to what the user can see.
+users can zoom. Also, using the ability to query the log data on the backend,
+the \fragment view should only download and render what the user can see.
 
 Besides performance improvements, we plan to integrate X-trace and its
 visualization to offer the orthogonal view that allows users to trace how tuple
