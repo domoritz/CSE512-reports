@@ -138,10 +138,14 @@ executing an operator. \system provides a \fragment view to aid this understandi
 The \fragment view visualizes the utilization of the cluster by showing whether each worker is busy working
 on the selected fragment. It also breaks down the work done by each worker into operators composing the fragment.
 
-\item A view for communication between workers. A directed link between two fragments in the physical query plan DAG
-represents source workers sending tuples to destination workers. Upon clicking on a link, the visualization renders the
-\network view. This shows the aggregate number of tuples exchanged between workers as well as a time series
-charting the number of tuples exchanged over time.
+\item \emph{How is the input data partitioned?}
+Data skew is an important problem in a DDBMS, which can result in uneven communication between worker threads
+residing on different machines. \system provides a view for \network that represents communication   
+between two fragments in the \graph.
+
+%represents source workers sending tuples to destination workers. Upon clicking on a link, the visualization renders the
+%\network view. This shows the aggregate number of tuples exchanged between workers as well as a time series
+%charting the number of tuples exchanged over time.
 
 \end{itemize}
 
