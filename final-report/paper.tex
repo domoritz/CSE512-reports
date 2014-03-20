@@ -317,10 +317,11 @@ schedule shows what operators the worker executed and for how long.
 
 % Dom
 
-The \overall shows small multiples of the utilization chart as described in the previous section.
+The \overall shows small multiples of the utilization chart described in the previous section.
 In addition to identifying execution skew, the user can compare the fragments and find
-correlations between the execution of different fragments. This view helps the user navigate to the
-right fragment and is not intended to offer further inside into the causes or performance problems.
+correlations between the execution of different fragments. This view helps the user navigate between 
+fragments and is not intended to offer deep insight into performance issues. Section~{\sec:case1} describes
+a usecase for the \overall visualization.
 
 % Write about small multiples view
 
@@ -406,17 +407,15 @@ The resulting \graph visualization is displayed in Figure~\ref{fig:join}. The us
 % Thierry + Dom
 
 \subsection{Case 1: Identifying Performance Bottlenecks using the \overall}
+\label{sec:case1}
 
-The \overall allows the user to quickly get an overview over the execution of all fragments
-on all workers in the form of small multiples of the utilization charts as introduced in
-Section~\ref{sec:fragment}. In Figure~\ref{fig:overview_skew} the user can see for example
-that fragment~2 is very irregularly executed on different workers. If the graph is not a
-single hill (as it is the case in Fragment 1, 3 and 4), workers are sleeping because they
-either don't have enough data available to execute the operators or the output buffers
-are full and data cannot be sent to the next fragment in the query graph.
-
-The user has not identifies Fragment~2 to be a performance bottleneck and can use the other views
-to further investigate its causes.
+The \overall view provides the user with a summary of the execution of all fragments
+on all workers as described in
+Section~\ref{sec:fragment}. In Figure~\ref{fig:overview_skew} the user can see for instance
+that Fragment~2 is irregularly executed on multiple workers. 
+If the graph is not monolithic (as it is the case in Fragment 1, 3 and 4), workers are sleeping because they
+either (1) don't have enough data available to work on (data dependency problem) or (2) the destination worker's
+input buffers are full thus forcing the source workers to stall.
 
 \begin{figure}[ht]
   \includegraphics[width=\columnwidth]{images/overview_skew}
