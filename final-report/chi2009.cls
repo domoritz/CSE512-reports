@@ -647,10 +647,10 @@
  \let\maketitle\relax
  \let\@maketitle\relax
  \gdef\@thanks{}\gdef\@author{}\gdef\@title{}\gdef\@subtitle{}\let\thanks\relax
- \@copyrightspace} % JRB 2008-08-13 this line was commented out for some reason
+ %\@copyrightspace} % JRB 2008-08-13 this line was commented out for some reason
                    % which meant that the copyright space wasn't reserved.
                    % I re-enabled it.
-
+  }
 %% CHANGES ON NEXT LINES
 \newif\if@ll % to record which version of LaTeX is in use
 
