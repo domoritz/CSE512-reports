@@ -64,14 +64,16 @@ breaklinks=true,
 
 \begin{abstract}
 
-We propose \system, a visualization tool that helps database developers
-explore and understand query execution and data movement in a distributed
-database management system (DDBMS). \system provides quick insight into common
-problems such as data skew or performance bottleneck by leveraging
-visualization techniques to present: (1) data flow between query operators and
-between workers, (2) query execution and operator dependencies, (3) cluster
-utilization and (4) network utilization.
+\sloppy
+We propose \system, a visualization tool that helps database developers explore
+and understand query execution and data movement in a distributed database
+management system. \system provides quick insight into common problems
+such as data skew or performance bottleneck by leveraging visualization
+techniques to present: (1) data flow between query operators and between
+workers, (2) query execution and operator dependencies, (3) cluster
+utilization, (4) network utilization.
 
+\sloppy
 In particular, \system is built to inspect query execution in Myria~\cite{myria},
 a distributed big data management system currently being developed in the
 UW CSE database group. Myria aims towards building a distributed database
@@ -107,9 +109,21 @@ communication between distributed workers. \system is designed to help the Myria
 the following questions. 
 
 \begin{itemize}
-\item \emph{How does the data flow through the workers between query fragments?} 
-\item \emph{How can we identify data skew and execution skew?} 
-\item \emph{What causes performance bottlenecks?}
+\item \emph{How does the data flow through the system between operators?} 
+The overall data flow in a DDBMS is represented by a \graph. It is important
+for the developer to understand the \graph in order to optimize it. To aid in this
+understanding, we provide an interactive visualization of the \graph in \system. 
+
+\item \emph{How does the cluster visualization vary for each fragment and operator?} 
+In \emph{Myria}, a fragment is composed of multiple sequential database operators running on the same worker. 
+A programmer will want to understand the cluster utilization at a given time as well as how much time is being spent
+executing an operator. \system provides a \fragment view to aid this understanding. The \fragment view visualizes the utilization of the cluster by showing what operator in the fragment each worker is busy working on.
+
+\item \emph{How is the input data partitioned?}
+Data skew is an important problem in a DDBMS, which can result in uneven communication between worker threads
+residing on different machines. \system provides a view for \network that all-to-all communication   
+between two fragments in the \graph.
+
 \end{itemize}
 
 We show in the next sections how \system addresses these questions by the means of effective data visualization.
@@ -275,7 +289,7 @@ The user can perform three classes of actions on the \graph view that will rende
 
 \textbf{Graph Rendering:} We use D3 \cite{2011-d3} to render the \graph graph, which allows us to support various interactions and transitions. We use GraphViz \cite{Ellson01graphviz} in the backend to generate graph layout data. GraphViz generates graph layouts that are optimized to minimize area footprint. The layout information is then fed into a D3-based rendering engine which supports various interactions and animations techniques.
 
-\textbf{Graph Navigation:} A query plan can be arbitrarily large. Thus we offer two mechanisms that facilitate exploration of the graph for the user: (1) expanding/reducing fragments and (2) zooming. The first mechanism can reduce the size of a graph by a constant factor by collapsing operators that compose a fragment into a single fragment node. The user can click once on a collapsed fragment to expand it, and click once on an expanded fragment to collapse it. Expanding or reducing a node can cause large changes in the graph layout as GraphViz changes the graph layout to minimize overall area. This graph re-shuffling is illustrated in Figure~\ref{graph} where expanding Fragment~2 causes the layout to change. To address these layout changes, we implemented transitions to allow the user to track the fragments as those get reshuffled. The second mechanism that facilitates exploration of the graph for the user is zooming. This feature was implemented in D3 and allows the user to quickly jump from one part of the graph to the next, by zooming in and out of the graph view.
+\textbf{Graph Navigation:} A query plan can be arbitrarily large. Thus we offer two mechanisms that facilitate exploration of the graph for the user: (1) expanding/reducing fragments and (2) paning. The first mechanism can reduce the size of a graph by a constant factor by collapsing operators that compose a fragment into a single fragment node. The user can click once on a collapsed fragment to expand it, and click once on an expanded fragment to collapse it. Expanding or reducing a node can cause large changes in the graph layout as GraphViz changes the graph layout to minimize overall area. This graph re-shuffling is illustrated in Figure~\ref{graph} where expanding Fragment~2 causes the layout to change. To address these layout changes, we implemented transitions to allow the user to track the fragments as those get reshuffled. The second mechanism that facilitates exploration of the graph for the user is paning. This feature was implemented in D3 and allows the user to navigate a graph when it doesn't fit inside of the browser panel.
 
 \textbf{Tooltip Information:} \todo{write me}
 
@@ -306,7 +320,7 @@ in the operators chart (Figure~\ref{fig:operators_chart}). The per-worker
 schedule displays what operators each worker is executing over time.
 
 \begin{figure}[ht]
-  \includegraphics[width=\columnwidth]{images/operators_chart}
+  \includegraphics[width=\columnwidth]{images/operators-chart}
   \caption{The operators chart.}
   \label{fig:operators_chart}
 \end{figure}
@@ -339,7 +353,7 @@ for the \network chart. But feedback from our peers convinced us that
 a chord diagram would suffer from scalability problems. Adding an option for displaying a chord diagram remains
 part of future work.
 
-\todo{is this figure necessary or is the figure in the evaluation section enough?}
+%\todo{is this figure necessary or is the figure in the evaluation section enough?}
 
 \begin{figure}[!ht]
   \includegraphics[width=\columnwidth]{images/networkVis1}
@@ -350,12 +364,12 @@ part of future work.
 
 When the user clicks on a matrix cell, she is able to view the breakdown of the worker pair communication in a
 time series chart below the matrix. The user can select multiple such cells to compare different time
-series. Figure~\ref{fig:ts} shows an example when the user selected two pairs: (8-2) and (7-6). The x-axis shows
+series. Figure~\ref{fig:ts} shows an example when the user selected two pairs: (8-1) and (7-5). The x-axis shows
 time in seconds and y-axis shows number of tuples exchanged between the source and destination workers.
 Just looking at the matrix chart it is evident that there is more data exchanged between the source-destination pair
-(8-2) than the pair (7-6). But as the time series comparison shows, there is more communication between (7-6)
-than (8-2) for the last 2.5 seconds of the query execution. This points to interesting patterns as to the rate at which
-work is executed on different workers during different stages of the execution. Distinct points on the lines are highlighted as
+(8-2) than the pair (7-6). But as the time series comparison shows, there is more communication between (7-5)
+than (8-1) for the last 2.5 seconds of the query execution. This points to interesting patterns as to the rate at which
+work is done at different workers at different stages of the execution. Distinct points on the lines are highlighted as
 black dots. Hovering the cursor over a dot shows the information for that data point in a tooltip. Meanwhile the cells
 in the matrix remain highlighted using the same color used to draw the corresponding time series line. This helps the
 user keep track of the mapping between the matrix cell and the corresponding time series line. We also provide
@@ -412,7 +426,7 @@ If the graph is not one solid block as it in Fragment 1, 3 and 4, one can assume
 can be caused by one of two reasons: (1) the workers don't have enough data available to work on (i.e. data dependency problem) or (2) the destination worker's input buffers are full thus forcing the source workers to stall (i.e. back-pressure problem).
 
 \begin{figure}[ht]
-  \includegraphics[width=\columnwidth]{images/overview_skew}
+  \includegraphics[width=\columnwidth]{images/overview-skew}
   \caption{This \overall shows very irregular usage in fragment 2.}
   \label{fig:overview_skew}
 \end{figure}
@@ -422,12 +436,12 @@ can be caused by one of two reasons: (1) the workers don't have enough data avai
 \begin{figure}[ht]
   \centering
   \begin{subfigure}[b]{0.49\columnwidth}
-    \includegraphics[width=\columnwidth]{images/skew}
+    \includegraphics[width=\columnwidth]{images/skew.pdf}
     \caption{Data skew.}
     \label{fig:skew}
   \end{subfigure}
   \begin{subfigure}[b]{0.49\columnwidth}
-    \includegraphics[width=\columnwidth]{images/no-skew}
+    \includegraphics[width=\columnwidth]{images/no-skew.pdf}
     \caption{No data skew.}
     \label{fig:no-skew}
   \end{subfigure}
@@ -440,7 +454,7 @@ The \network visualization at a glance shows how much data was sent between work
 \subsection{Case 3: Identifying Execution Skew using the \fragment View}
 
 \begin{figure}[ht]
-  \includegraphics[width=\columnwidth]{images/execution_skew}
+  \includegraphics[width=\columnwidth]{images/execution-skew}
   \caption{This \fragment view shows heavy execution skew on worker~5.}
   \label{fig:exec_skew}
 \end{figure}
