@@ -70,13 +70,13 @@ database management system (DDBMS). \system provides quick insight into common
 problems such as data skew or performance bottleneck by leveraging
 visualization techniques to present: (1) data flow between query operators and
 between workers, (2) query execution and operator dependencies, (3) cluster
-utilization, (4) network utilization.
+utilization and (4) network utilization.
 
 In particular, \system is built to inspect query execution in Myria~\cite{myria},
 a distributed big data management system currently being developed in the
 UW CSE database group. Myria aims towards building a distributed database
 platform to provide \emph{big data management and analytics as a service} primarily
-for scientific applications. The proposed visualizations can easily be applied to
+for scientific applications. \system was designed to be easily ported to
 other DDBMS as well (e.g. Spark, Hadoop).
 
 \end{abstract}
@@ -100,50 +100,19 @@ saving them significant guesswork and programming effort to identify the appropr
 \system, uses profiling logs from \emph{Myria} \cite{myria} as the prototype DDBMS. Myria is a distributed
 database platform that provides \emph{big data management and analytics as a service} primarily for scientific applications.
 Myria takes queries in high-level query languages, such as SQL, translating them into physical query plans and finally executing
-them in parallel. Currently, Myria does not offer a visualization tool designed to show the physical query plan, job execution and network
-communication between distributed workers. \system is designed to help the Myria developer answer the following questions regarding
-their query execution. 
-\system, uses profiling logs from Myria as the prototype DDMS. Myria is a distributed
-database platform that provides \emph{big data management and analytics as a service} primarily for scientific applications.
-Myria takes queries in high-level query languages, such as SQL, translating them into physical query plans and finally executing
-them in parallel. Currently, Myria does not offer a visualization tool designed to show the physical query plan, job execution and network
-communication between distributed workers. \system allows the user to visualize the following aspects
-of query execution.
+them in parallel. A query plan is an ordered set of steps used to access data in database management systems. Myria breaks down each query plan into \emph{fragments}. A fragment is composed of multiple sequential database operators running on one worker. Fragments map down to a unit of work that can be scheduled and parallelized across a cluster.
+
+Currently, Myria does not offer a detailed visualization front-end designed to provide insight into job execution and network
+communication between distributed workers. \system is designed to help the Myria developers write better optimized queries by addressing
+the following questions. 
 
 \begin{itemize}
-\item \emph{How does the data flow through the system between operators?} 
-The overall data flow in a DDBMS is represented by a \graph. It is important
-for the developer to understand the \graph in order to optimize it. To aid in this
-understanding, we provide an interactive visualization of the \graph in \system. 
-
-%The physical
-%query plan is composed of a directed graph of query \emph{fragments}. A query
-%fragment is a subtree of the query execution plan that is separated from the
-%rest of the plan by a network boundary. This means that the operators inside a
-%query fragment can be executed by a single thread. Each fragment is scheduled
-%to run on multiple workers, which means each worker thread executes the same set of
-%operators inside the fragment, but on different data. Each graph link represents
-%communication between workers, possibly over the network.  \system displays
-%this \graph in an interactive fashion with clickable elements for fragment nodes
-%and communication links.  The \graph also represents a high-level data flow in
-%the DDBMS.
-
-\item \emph{How does the cluster visualization vary for each fragment and operator?} 
-%A view for cluster utilization and operator performance for each query fragment. 
-In \emph{Myria}, a fragment is composed of multiple sequential database operators running on the same worker. 
-A programmer will want to understand the cluster utilization at a given time as well as how much time is being spent
-executing an operator. \system provides a \fragment view to aid this understanding. 
-%Upon clicking on a collapsed fragment node in the
-%query plan DAG, the node expands to display the operators comprising the fragment and renders the fragment execution view.
-The \fragment view visualizes the utilization of the cluster by showing whether each worker is busy working
-on the selected fragment. It also breaks down the work done by each worker into operators composing the fragment.
-
-\item A view for communication between workers. A directed link between two fragments in the physical query plan DAG
-represents source workers sending tuples to destination workers. Upon clicking on a link, the visualization renders the
-\network view. This shows the aggregate number of tuples exchanged between workers as well as a time series
-charting the number of tuples exchanged over time.
-
+\item \emph{How does the data flow through the workers between query fragments?} 
+\item \emph{How can we identify data skew and execution skew?} 
+\item \emph{What causes performance bottlenecks?}
 \end{itemize}
+
+We show in the next sections how \system addresses these questions by the means of effective data visualization.
 
 
 % Umar
@@ -160,6 +129,8 @@ charting the number of tuples exchanged over time.
 
 
 \section{Related Work}
+
+Performance visualization tools for distributed systems are not a new idea.
 
 Ambrose\cite{ambrose} is a platform developed by Twitter to visualize and
 real-time monitor MapReduce data workflows. Ambrose
@@ -198,14 +169,12 @@ is necessary to optimize physical query execution.
 
 % Adriana
 
-The first step in designing \system was to identify the possible causes that
-could affect the execution performance of the query. After we identified
-several such causes, that we will enumerate below, we leveraged visualization
-techniques that we found fit to allow developers to get insight
-into how the query was executed on the available resources and quickly
-identify the source(s) of the performance penalty.
+The first step in designing \system was to identify the possible causes that 
+affect the performance of a query execution. After we identified
+several such causes, we explored visualization
+techniques we found adequate in exposing those performance bottlenecks.
 
-We found that the performance of the query might be affected by the following
+We found that the performance of a query might be affected by the following
 factors, which greatly influenced the design of our visualization tool:
 \begin{itemize}
    \item \emph{Wrong/unoptimized physical query plan.} We manually analyzed
@@ -213,25 +182,25 @@ several physical query plans and discovered that some queries were poorly
 optimized. This led us to design a view that allows interactive exploration of
 the physical query plan (mapped to a graph of query operators).
    \item \emph{Stragglers, tail latency, expensive query operators, poor
-scheduling.} Our targeted systems are \emph{distributed} databases. Therefore,
-as the query is executed in a distributed environment, the query coordinator
+scheduling.} We target \emph{distributed} database management systems. Therefore,
+as the query gets executed in a distributed environment, the query coordinator
 has to wait until all the workers finish executing their assigned tasks. To
-give insight into how the tasks are distributed and executed at each workers,
-we designed a view that shows the cluster utilization over time and at each
-worker.
+give insight into how the tasks are distributed and executed on each worker,
+we provide a view that exposes utilization details at the cluster and worker levels.
    \item \emph{Poor data partitioning, data skew.} Network traffic can cause
 serious delay when executing a distributed query. Due to poor data
-partitioning, workers might need to send unnecessary big amount of data between
-each other. We designed a view that allows the developer to analyze
+partitioning, workers might need to send large amounts of data to one
+another. We designed a view that allows the developer to analyze
 the data traffic generated while executing the query.
 \end{itemize}
 
 % Why did we choose the visualization
 % How it is implemented
 % explain how events and logs are used to create the raw data for vis
+\subsection{System Overview}
 
 \system's architecture (Figure~\ref{fig:arch}) is composed of: (1) a back-end
-used as a plug-in interface for the targeted distributed database system, and (2) a
+used as a plug-in interface to the targeted distributed database system, and (2) a platform-independent
 front-end that produces performance visualizations what we describe in Section~\ref{sec:front}. The front-end and
 back-end of \system are highly decoupled so that the visualization can be used not only with
 Myria but also with other systems such as Spark or Hadoop. In
@@ -241,13 +210,13 @@ aggregation in Myria.
 \subsection{Back-end}
 \label{sec:back}
 
-The role of the back-end is produce event logs that record when operators are called, when the call returns and when data is sent to another worker. These logs are then used to create the visualizations in \system's web UI as described in Section~\ref{sec:front}.
+The role of \system's back-end is to produce event logs that include: when operators are called, when the call returns and when data is sent between workers. These logs are then used to create the visualizations in \system's web UI as described in Section~\ref{sec:front}.
 
-There are two possible approaches that we explored to collect event logs. The first and simplest approach was to write the logs on files directly to disk. The files would then get hauled back on one node using remote copy. The logs would then be parsed, and the data transformed into the desired format.
+We explored two approaches for collecting event logs. The simplest approach was to write the logs on files directly to disk. The files would then get hauled back to one master node using remote copy where they would then get parsed, manipulated to the desired format.
 
-We switched to a more scalable data collection approach approach as shown in Figure~\ref{fig:arch} where logs get written directly into the worker's database as tuples in a relation. When the front-end client requests data, the master executes a query that collects the data and streams the results directly to the requesting client. We found this data collection approach to be more scalable, reliable and faster. More particularly, we are able to write queries to aggregate, filter and transform the collected data.
+We switched to a more scalable data collection approach described in Figure~\ref{fig:arch} where logs get written directly into the local worker's database as tuples in a relation. When the front-end client requests data, the master executes a query that gathers the log data from the dirstributed workers, and streams the results directly to the requesting client. We found this data collection approach to be more scalable, reliable and faster than the simpler file-based logging approach. More particularly, using a database to manage performance logs allowed us to write queries to aggregate, filter and transform the collected data.
 
-For example, when querying how many workers are working on a certain fragment at a given time to produce the visualization described in Section~\ref{sec:fragment}, we used a query to select only events in the root operators (the operators that have no parent in the same fragment) for each fragment and a custom map function that carries state. The state is an integer that is incremented when the operator is called on a worker and decremented when the operator returns.
+For example, to produce the visualization described in Section~\ref{sec:fragment}, we had to query how many workers are working on a certain fragment at a given time. To do this, we used a query to select events in the root operators (i.e. parentless operator) of each fragment and used a custom map function to carry state. The state is an integer that is incremented when the operator is called on a worker and decremented when the operator returns.
 
 \begin{figure}[ht]
   \includegraphics[width=\columnwidth]{images/viz_arch}
@@ -259,8 +228,6 @@ For example, when querying how many workers are working on a certain fragment at
 \label{sec:front}
 
 The Myria web front-end server is written in Python and runs on Google App Engine\footnote{\url{https://developers.google.com/appengine/}}. \system's user-interface (UI) is embedded into Myria's web front-end. We build \system's UI using D3\cite{2011-d3} to deliver an interactive visualization experience to the user. D3 is a JavaScript framework for data visualization on the web.
-
-\system's front-end gets data from the Myria server as JSON and CSV files. JSON is used to describe the physical queryplan. CSV files contain logs on query execution at the fragment and operator level as well as data exchange between workers at different stages of the query execution.
 
 \system's web UI is divided into two components: (1) the browser panel which provides a visualization of the \graph, and (2) the performance panel which provides some insight into an element selected in the browser view. The browser panel contains a view of the \graph, rendered as a graph. The user can navigate the \graph by expanding query fragments into the operators that compose it. The user can chose to select a fragment of interest which will render a \fragment visualization of the selected fragment in the performance panel. Alternatively, the user can select an fragment-to-fragment edge in the \graph thus rendering a \network visualization of the selected edge in the performance panel. If no elements are selected in the \graph view, an \overall visualization is rendered in the performance panel, displaying the aggregate worker utilization over time for each fragment.
 
@@ -294,21 +261,21 @@ The following subsections describe each one of the four views offered by \system
 \end{figure}
 
 
-The \graph view as pictured in Figure~\ref{fig:graph} allows the user to selectively browse different performance visualizations tied to a given query execution. The \graph view provides as the name indicates, a visualization of the physical query plan. A query plan is an ordered set of steps used to access data in database management systems. The physical query plan is represented by a graph where each node represents a query fragment, and each link represents inter-\network from one query fragment to the next. Each query fragment is a collection of query operators. One can think of a query fragment as a job unit that gets scheduled on a cluster of machines. Consequently transitioning from one query fragment to another generally leads to all-to-all communication between worker nodes on the cluster.
+The \graph view as pictured in Figure~\ref{fig:graph} allows the user to selectively browse different performance visualizations of a given query. The physical query plan is represented by a graph where each node represents a query fragment, and each link represents inter-worker communication between the execution of two query fragments. Each query fragment is composed by a collection of query operators that can be executed together as one job. 
 
 
-The user can perform three classes of actions that will render a new visualization in the performance panel:
+The user can perform three classes of actions on the \graph view that will render a new visualization in the performance panel:
 \begin{itemize}
 
     \item \textbf{Empty selection:} by default if no fragments or edges are selected in the \graph view, an \overall visualization is rendered in the performance panel. This visualization displays the aggregate worker utilization over time for each fragment and provides cluster utilization data at a glance.
     \item \textbf{Fragment selection:} when selecting a fragment, a \fragment visualization gets rendered in the performance panel. The \fragment visualization provides aggregate cluster utilization information complemented by per-worker task schedules. When a fragment is selected, the operands inside of the fragment in the \graph view are color-coded to allow the user to easily match each task in the per-worker task schedule in the performance window with the corresponding query operator in the browser window.
-    \item \textbf{Edge selection:} upon selecting one or more fragment-to-fragment edges, a \network visualization gets displayed, providing information on inter-\network from one query fragment to the next.
+    \item \textbf{Edge selection:} upon selecting one or more fragment-to-fragment edges, a \network visualization gets displayed, providing information on inter-worker communication transitioning from one query fragment to the next.
 
 \end{itemize}
 
-\textbf{Graph Rendering:} We use D3 \cite{2011-d3} to render the \graph graph, which allows us to support various interactions and transitions. We use GraphViz \cite{Ellson01graphviz} in the backend to generate graph layout information. GraphViz allows us to generate graph layouts that are optimized to minimize area footprint. The layout information is then fed into a D3-based rendering engine which supports various interactions and animations techniques.
+\textbf{Graph Rendering:} We use D3 \cite{2011-d3} to render the \graph graph, which allows us to support various interactions and transitions. We use GraphViz \cite{Ellson01graphviz} in the backend to generate graph layout data. GraphViz generates graph layouts that are optimized to minimize area footprint. The layout information is then fed into a D3-based rendering engine which supports various interactions and animations techniques.
 
-\textbf{Graph Navigation:} A query plan can be arbitrarily large. Thus we offer two mechanisms that facilitate exploration of the graph for the user: (1) expanding/reducing fragments and (2) zooming. The first mechanism can reduce the size of a graph by a constant factor by collapsing operators that compose a fragment into a single fragment node. The user can click once on a collapsed fragment to expand, and click once on an expanded fragment to collapse it. Expanding or reducing a node can cause large changes in the graph layout as GraphViz changes the graph layout to minimize overall area. This graph re-shuffling is illustrated in Figure~\ref{graph} where expanding Frag2 causes the layout to change. To address these layout changes, we implemented transitions to allow the user to track the fragments as those get reshuffled. The second mechanism that facilitates exploration of the graph for the user is zooming. This feature was implemented in D3 and allows the user to quickly jump from one part of the graph to the next, by zooming in and out of the graph view.
+\textbf{Graph Navigation:} A query plan can be arbitrarily large. Thus we offer two mechanisms that facilitate exploration of the graph for the user: (1) expanding/reducing fragments and (2) zooming. The first mechanism can reduce the size of a graph by a constant factor by collapsing operators that compose a fragment into a single fragment node. The user can click once on a collapsed fragment to expand it, and click once on an expanded fragment to collapse it. Expanding or reducing a node can cause large changes in the graph layout as GraphViz changes the graph layout to minimize overall area. This graph re-shuffling is illustrated in Figure~\ref{graph} where expanding Fragment~2 causes the layout to change. To address these layout changes, we implemented transitions to allow the user to track the fragments as those get reshuffled. The second mechanism that facilitates exploration of the graph for the user is zooming. This feature was implemented in D3 and allows the user to quickly jump from one part of the graph to the next, by zooming in and out of the graph view.
 
 \textbf{Tooltip Information:} \todo{write me}
 
@@ -319,24 +286,24 @@ The user can perform three classes of actions that will render a new visualizati
 % Adriana
 
 The \fragment view comprises two charts: the utilization chart and the
-operators chart. The utilization chart (Figure~\ref{fig:utilization_chart}) shows on
-how many workers a fragment is running over time. The chart is used to
+operators chart. The utilization chart (Figure~\ref{fig:utilization_chart}) shows
+how many workers a fragment is running on over time. The chart is used to
 quickly reveal any patterns in the schedule, like tail latency, long periods of
-idleness, etc. Execution skew is visible as humps.
-We implemented \emph{focus+context}\cite{furnas1986generalized} in form of
+idleness, etc. 
+We implemented \emph{focus+context}\cite{furnas1986generalized} using 
 a small brush (at the top of the figure) that allows the user to zoom-in and further
-analyze the problematic area without loosing the context of the whole execution.
+analyze a problematic area without loosing context on the entire execution.
 
 \begin{figure}[ht]
   \includegraphics[width=\columnwidth]{images/utilization_chart}
-  \caption{The utilization chart. The user can brush on either the small graph on top or the bottom graph. Brushing on the second chart zooms the chart.}
+  \caption{The utilization chart. The user can brush on either the small graph on top or the bottom graph to zoom into a region of interest.}
   \label{fig:utilization_chart}
 \end{figure}
 
 The utilization chart also implements a brush that allows the user to further
-analyze the query execution by displaying the schedule of each of the worker
-nodes, in the operators chart (Figure~\ref{fig:operators_chart}). The per-worker
-schedule shows what operators the worker executed and for how long.
+analyze query execution by displaying the work schedule of each worker 
+in the operators chart (Figure~\ref{fig:operators_chart}). The per-worker
+schedule displays what operators each worker is executing over time.
 
 \begin{figure}[ht]
   \includegraphics[width=\columnwidth]{images/operators_chart}
@@ -362,13 +329,13 @@ a usecase for the \overall visualization.
 The \network view consists of two charts: the aggregate communication
 chart and the time series chart. The aggregate communication chart is a matrix (Figure~\ref{fig:network}) representing
 a cluster of $N$ workers. Each cell $m,n$ in the matrix represents the total number of tuples sent
-by worker $m$ to worker $n$ during the query execution. We chose to use the colors from color brewer\cite{harrower2003colorbrewer} and interpolated the colors between the steps using the \emph{CIE L*a*b*} interpolation and lightness correction \cite{chromajsaisch}. The colors work in grayscale and can be interpreted by color blind users.
+by worker $m$ to worker $n$ during the query execution. We chose to use the colors from color brewer\cite{harrower2003colorbrewer} and interpolated the colors between the steps using the \emph{CIE L*a*b*} interpolation and lightness correction \cite{chromajsaisch}. The colors work in grayscale and can be interpreted by color-blind users.
 
 The matrix chart representing aggregate communication between workers help uncover data skew
-issues, as discussed in \S \ref{sec:eval}.
+issues, as discussed in Section~\ref{sec:eval}.
 
 We initially considered having a chord diagram\footnote{\url{http://bl.ocks.org/mbostock/4062006}} instead of a matrix
-for the \network chart. But feedback during the progress presentation session convinced us that
+for the \network chart. But feedback from our peers convinced us that
 a chord diagram would suffer from scalability problems. Adding an option for displaying a chord diagram remains
 part of future work.
 
@@ -381,17 +348,17 @@ part of future work.
   \label{fig:matrix}
 \end{figure}
 
-When the user clicks on a matrix cell, they are able to view the breakdown of the worker pair communication in a
+When the user clicks on a matrix cell, she is able to view the breakdown of the worker pair communication in a
 time series chart below the matrix. The user can select multiple such cells to compare different time
 series. Figure~\ref{fig:ts} shows an example when the user selected two pairs: (8-2) and (7-6). The x-axis shows
 time in seconds and y-axis shows number of tuples exchanged between the source and destination workers.
 Just looking at the matrix chart it is evident that there is more data exchanged between the source-destination pair
 (8-2) than the pair (7-6). But as the time series comparison shows, there is more communication between (7-6)
 than (8-2) for the last 2.5 seconds of the query execution. This points to interesting patterns as to the rate at which
-work is done at different workers at different stages of the execution. Distinct points on the lines are highlighted as
+work is executed on different workers during different stages of the execution. Distinct points on the lines are highlighted as
 black dots. Hovering the cursor over a dot shows the information for that data point in a tooltip. Meanwhile the cells
-in the matrix remain highlighted with the same color used to draw the corresponding time series line. This aids in the
-user keeping track of the mapping between the matrix cell and the corresponding time series line. We also provide
+in the matrix remain highlighted using the same color used to draw the corresponding time series line. This helps the
+user keep track of the mapping between the matrix cell and the corresponding time series line. We also provide
 a 'clear selection' button that erases everything from the time series chart upon clicking. Finally we provide the
 functionality whereby clicking a row or column label selects every cell in that row or column and displays the
 corresponding time series in the time series chart.
@@ -409,7 +376,7 @@ corresponding time series in the time series chart.
 
 We used \system to examine real world database queries that ran on Myria. We base our analysis on the different visualizations that were generated by \system and present examples where the \system helped us better identify (1) data skew, (2) execution skew, (3) performance bottlenecks.
 
-We explore a simple join query we performed on one million tuples extracted from the Twitter user graph. This query joins Twitter followers and followees by user ID. The query can be written in SQL as:
+We explore a simple join query we performed on one million tuples sampled from a Twitter user graph. This query joins Twitter followers and followees by user ID. The query can be written in SQL as:
 
 \begin{lstlisting}
 SELECT *
@@ -426,7 +393,7 @@ WHERE S.follower = R.followee
 \end{figure}
 
 
-The resulting \graph visualization is displayed in Figure~\ref{fig:join}. The user will navigate the \graph visualization in the browser panel in the next case studies to identify several performance symptoms.
+The resulting \graph visualization is displayed in Figure~\ref{fig:join}. The user will navigate the \graph visualization in the browser panel in the next case studies to identify different performance issues.
 
 
 % How it helps
@@ -441,9 +408,8 @@ The \overall view provides the user with a summary of the execution of all fragm
 on all workers as described in
 Section~\ref{sec:fragment}. In Figure~\ref{fig:overview_skew} the user can see for instance
 that Fragment~2 is irregularly executed on multiple workers. 
-If the graph is not monolithic (as it is the case in Fragment 1, 3 and 4), workers are sleeping because they
-either (1) don't have enough data available to work on (data dependency problem) or (2) the destination worker's
-input buffers are full thus forcing the source workers to stall.
+If the graph is not one solid block as it in Fragment 1, 3 and 4, one can assume workers are sleeping. Having workers sleep 
+can be caused by one of two reasons: (1) the workers don't have enough data available to work on (i.e. data dependency problem) or (2) the destination worker's input buffers are full thus forcing the source workers to stall (i.e. back-pressure problem).
 
 \begin{figure}[ht]
   \includegraphics[width=\columnwidth]{images/overview_skew}
@@ -469,9 +435,7 @@ input buffers are full thus forcing the source workers to stall.
   \label{fig:network}
 \end{figure}
 
-\todo{Let's not call the fragments frag2 but write fragment 2}
-
-The \network visualization at a glance shows how much data was sent between workers by one query fragment to the next. The two \network views in Figure~\ref{fig:network} were obtained by selecting the Frag0$\rightarrow$Frag2 and Frag1$\rightarrow$Frag2 edges respectively in the \graph view. Figure~\ref{fig:network} displays aggregate data communication between workers. In Figure~\ref{fig:no-skew} the amount of data sent from each worker to every other worker is balanced as opposed to Figure~\ref{fig:skew} where one can see that the volume of data sent to worker~1 and worker~5 outweighs data sent to the other workers in the system. This apparent data skew could be caused by partitioning issues.
+The \network visualization at a glance shows how much data was sent between workers by one query fragment to the next. The two \network views in Figure~\ref{fig:network} were obtained by selecting the Fragment0$\rightarrow$Fragment2 and Fragment1$\rightarrow$Fragment2 edges respectively in the \graph view. Figure~\ref{fig:network} displays aggregate data communication between workers. In Figure~\ref{fig:no-skew}, the amount of data sent from each worker to every other worker is balanced as opposed to Figure~\ref{fig:skew} where one can see that the volume of data sent to worker~1 and worker~5 dwarfs data sent to the other workers in the system. This apparent data skew could be caused by poor partitioning.
 
 \subsection{Case 3: Identifying Execution Skew using the \fragment View}
 
@@ -481,24 +445,24 @@ The \network visualization at a glance shows how much data was sent between work
   \label{fig:exec_skew}
 \end{figure}
 
-The \fragment visualization allows the user to dive down into query execution details at the worker level. The \fragment view in Figure~\ref{fig:exec_skew} was obtained by selecting Frag2, which is the fragment that performs the join, in the \graph view. The user can observe at a glance that certain workers produce much more data as a result of the join execution. Particularly, we saw in Case 2 Figure~\ref{fig:skew}, that tuples sent to Fragment 2 from Fragment 1 were heavily skewed towards being sent to worker~1 and worker~5. In Figure~\ref{fig:exec_skew}, the user can now see that as a result of the join, worker~5 ends up producing most tuples that have to be written back to disk. The color scheme used for each worker schedules in the \fragment view is color-coded to match the operators in Figure~\ref{fig:join}. Consequently, one can quickly observe in the \fragment view that worker~5 is busy sending join results from $t = 2.5s$ to $t = 5.0s$, which differs from the rest of the workers. Using similar reasoning, one can conclude that worker 5 presents a performance bottleneck in the execution of the query on Myria. In the short term, the user can modify the way the input data set gets partitioned. Alternatively she could change the number of workers allocated for the job. in the long term, developers should look into ways to improve data flow to avoid that workers have to wait for input data to process.
+The \fragment visualization allows the user to dive down into query execution details at the worker level. The \fragment view in Figure~\ref{fig:exec_skew} was obtained by selecting Fragment2 in the \graph view. Fragment2 is the fragment that performs the join. The user can observe at a glance that certain workers produce much more data as a result of the join execution. Particularly, we saw in Case 2 Figure~\ref{fig:skew}, that tuples sent to Fragment2 from Fragment1 were heavily skewed towards being sent to worker~1 and worker~5. In Figure~\ref{fig:exec_skew}, the user can now see that as a result of the join, worker~5 ends up producing most tuples that have to be written back to disk. The color scheme used for each worker schedules in the \fragment view is color-coded to match the operators in Figure~\ref{fig:join}. Consequently, one can quickly observe in the \fragment view that worker~5 is busy sending join results from $t = 2.5s$ to $t = 5.0s$, which differs from the rest of the workers. Using similar reasoning, one can conclude that worker 5 presents a performance bottleneck in the execution of the query on Myria. In the short term, the user can modify the way the input data set gets partitioned. Alternatively the user could change the number of workers allocated for the job. In the long term, developers should look at ways to improve data flow to minimize idling on workers that are waiting on input data.
 
 \subsection{Discussion}
 
-All in all, \system allows the user to get much more insight into the execution of a query than what was available before, i.e. text-based performance logs, and runtimes. Being able to navigate performance data using a simple interface can indeed facilitate the task of a developer who is designing Myria's back end, or a Myria user who is writing complex queries to process large amounts of data. That said, \system can only help the user visualize query execution performance, but won't necessarily point the user to what she needs to do to improve performance of her query execution.
+All in all, \system allows the user to get much more insight into query execution than what was available before, i.e. text-based performance logs, and runtimes data. Being able to navigate performance data using a simple visual interface can indeed facilitate the task of a developer who is designing Myria's back end, or a Myria user who is writing complex queries to process large amounts of data. That said, \system can only help the user visualize query execution performance. \system but won't necessarily point the user to what needs to be done to improve query performance. We believe that an experienced user will quickly learn how to identify symptomatic performance execution, and know what steps to take to improve performance as a result. We would have to back this up with a user-study, which could be the object of future work in this direction.
 
 
 \section{Conclusion}
 
 This paper introduced \system, a visualization tool carefully tailored to help
-database developers or users to quickly identify common distributed databases
-performance bottlenecks, like tail latencies, data skew, etc. Our tool has been
-successfully integrated with the Myria distributed database system, and has already
-been used to identify several bugs, like poor physical query plan optimization,
-tail latencies, poor data partitioning, which led us to believe the
-visualization techniques we used are appropriate to help the user quickly
-navigate to/find the cause of the performance problem. \system could be easily
-plugged-in with another distributed database system, the only requirement being
+database developers and users to quickly identify common distributed databases
+performance bottlenecks, such as stragglers, data skew, etc. Our tool has been
+successfully integrated with the Myria distributed database management system, and has already
+been used to identify several bugs, such as  poor physical query plan optimization,
+stragglers, poor data partitioning etc. This has led us to believe that the
+visualization techniques we employed are effective in helping the user quickly
+narrow down and identify the cause of the performance bottleneck. \system could be easily
+integrated with another distributed database system, the only requirement being
 a specific log data format. We explained how we collect logs in Myria and recommend
 our approach to developers that are porting \system to a new DDBMS.
 
@@ -507,19 +471,19 @@ our approach to developers that are porting \system to a new DDBMS.
 \section{Future Work}
 
 The current implementation focuses on scalability. We managed to some extent to
-address the scalability issues raised by big query plans, large amount of
+address some scalability issues raised by big query plans, large amount of
 workers or long running queries. For example the \network view uses a
 scalable heatmap to show the communication between all the workers in the
 system. However, other techniques have to be further implemented to address
 this issue. One example would be a more interactive query plan graph, which the
-users can zoom. Also, using the ability to query the log data on the backend,
+users can zoom into. Also, by querying the performance log data on the backend,
 the \fragment view should only download and render what the user can see.
 
 Besides performance improvements, we plan to integrate X-trace and its
 visualization to offer the orthogonal view that allows users to trace how tuple
 batches flow through the operators and between operators. Combined with the
 visualizations described in this paper, it will form a powerful debugging tool
-that will help uers better understand and improve query execution.
+that will help users better understand and improve query execution.
 
 \bibliographystyle{abbrv}
 \bibliography{paper}
