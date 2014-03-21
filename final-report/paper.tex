@@ -377,7 +377,7 @@ for the \network chart. But feedback during the progress presentation session co
 a chord diagram would suffer from scalability problems. Adding an option for displaying a chord diagram remains
 part of future work.
 
-\todo{is this figure necessary or is the figure in the evaluation section enough?}
+%\todo{is this figure necessary or is the figure in the evaluation section enough?}
 
 \begin{figure}[!ht]
   \includegraphics[width=\columnwidth]{images/networkVis1}
@@ -388,11 +388,11 @@ part of future work.
 
 When the user clicks on a matrix cell, they are able to view the breakdown of the worker pair communication in a
 time series chart below the matrix. The user can select multiple such cells to compare different time
-series. Figure~\ref{fig:ts} shows an example when the user selected two pairs: (8-2) and (7-6). The x-axis shows
+series. Figure~\ref{fig:ts} shows an example when the user selected two pairs: (8-1) and (7-5). The x-axis shows
 time in seconds and y-axis shows number of tuples exchanged between the source and destination workers.
 Just looking at the matrix chart it is evident that there is more data exchanged between the source-destination pair
-(8-2) than the pair (7-6). But as the time series comparison shows, there is more communication between (7-6)
-than (8-2) for the last 2.5 seconds of the query execution. This points to interesting patterns as to the rate at which
+(8-2) than the pair (7-6). But as the time series comparison shows, there is more communication between (7-5)
+than (8-1) for the last 2.5 seconds of the query execution. This points to interesting patterns as to the rate at which
 work is done at different workers at different stages of the execution. Distinct points on the lines are highlighted as
 black dots. Hovering the cursor over a dot shows the information for that data point in a tooltip. Meanwhile the cells
 in the matrix remain highlighted with the same color used to draw the corresponding time series line. This aids in the
